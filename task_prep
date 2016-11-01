@@ -2,6 +2,7 @@ import shutil
 import os.path
 from glob import glob
 import xml.dom.minidom as dom
+import time
 
 prep = os.path.join('F:\\Transcoder\\staging\\prep\\')
 prep_count = os.listdir(prep)
@@ -18,6 +19,7 @@ prep_xml = glob('F:\\Transcoder\\staging\\prep\\*xml')
 mp4_src = glob('F:\\Transcoder\\staging\\prep\\*mp4')
 
 for file in prep_xml:
+    move_time = time.ctime()
     base = os.path.splitext(os.path.basename(file))[0]
     doc = dom.parse(file)
     filename = doc.getElementsByTagName("source_filename")
@@ -33,9 +35,7 @@ for file in prep_xml:
 
     load = [nc_1, nc_2, nc_3, nc_4]
 
-    print(load)
-    print(prep_count)
-    print(base)
+    # print(load)
 
     if min(load) == nc_1:
 
@@ -45,26 +45,28 @@ for file in prep_xml:
         shutil.move(file, node_1_path)
         shutil.move(scr_tar, node_1_path)
 
-    elif min(load) == nc_2:
+        print(move_time + ": The following files have been moved to Node 1:" '\n' + file + '\n' + scr_tar)
 
-        print("Task assigned to Node2")
+    elif min(load) == nc_2:
 
         shutil.copy(src_repo, scr_tar)
         shutil.move(file, node_2_path)
         shutil.move(scr_tar, node_2_path)
 
-    elif min(load) == nc_3:
+        print(move_time + ": The following files have been moved to Node 2:" '\n' + file + '\n' + scr_tar)
 
-        print("Task assigned to Node 3")
+    elif min(load) == nc_3:
 
         shutil.copy(src_repo, scr_tar)
         shutil.move(file, node_3_path)
         shutil.move(scr_tar, node_3_path)
 
-    elif min(load) == nc_4:
+        print(move_time + ": The following files have been moved to Node 3:" '\n' + file + '\n' + scr_tar)
 
-        print("Task assigned to Node 4")
+    elif min(load) == nc_4:
 
         shutil.copy(src_repo, scr_tar)
         shutil.move(file, node_4_path)
         shutil.move(scr_tar, node_4_path)
+
+        print(move_time + ": The following files have been moved to Node 4:" '\n' + file + '\n' + scr_tar)

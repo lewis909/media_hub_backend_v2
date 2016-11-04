@@ -3,8 +3,8 @@ from glob import glob
 
 # UNC Paths
 prep = os.path.join('F:\\Transcoder\\staging\\prep\\')
-prep_count = os.listdir(prep)
 repo = os.path.join("F:\\Transcoder\\repo\\")
+node_1 = os.path.join('F:\\Transcoder\\staging\\node_1\\')
 node_1_path = 'F:\\Transcoder\\staging\\node_1\\'
 node_2_path = 'F:\\Transcoder\\staging\\node_2\\'
 node_3_path = 'F:\\Transcoder\\staging\\node_3\\'

@@ -1,20 +1,18 @@
 import shutil
-import os.path
-import xml.dom.minidom as dom
 import time
 import config
+import os.path
+import xml.dom.minidom as dom
 
 
 for file in config.prep_xml:
     move_time = time.ctime()
-    base = os.path.splitext(os.path.basename(file))[0]
     doc = dom.parse(file)
     filename = doc.getElementsByTagName("source_filename")
     fname = filename[0].firstChild.nodeValue
-    mp4 = fname + '.mp4'
-    src_repo = config.repo + mp4
+    base = os.path.splitext(os.path.basename(file))[0]
+    src_repo = config.repo + fname + '.mp4'
     scr_tar = config.prep + base + '.mp4'
-
     nc_1 = len(config.node_1_count)
     nc_2 = len(config.node_2_count)
     nc_3 = len(config.node_3_count)

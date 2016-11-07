@@ -1,4 +1,3 @@
-# import sqlite3
 import os.path
 import time
 import config
@@ -37,6 +36,6 @@ def transcoder():
             shutil.move(node + base_mp4, processing_temp_root)
             shutil.move(node + base_xml, processing_temp_root + '\\core_metadata.xml')
 
-    
+
 
 transcoder()

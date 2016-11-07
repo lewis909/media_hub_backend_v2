@@ -4,23 +4,24 @@ import config
 import os.path
 import xml.dom.minidom as dom
 
+move_time = time.ctime()
+nc_1 = len(config.node_1_count)
+nc_2 = len(config.node_2_count)
+nc_3 = len(config.node_3_count)
+nc_4 = len(config.node_4_count)
+
+load = [nc_1, nc_2, nc_3, nc_4]
+
+print(move_time + ': Load Balance Status: Node_1 = ' + str(load[0]) + ', Node_2 = ' + str(load[1]) + ', Node_3 = ' + str(load[2]) + ', Node_4 =' + str(load[3]))
 
 for file in config.prep_xml:
-    move_time = time.ctime()
+
     doc = dom.parse(file)
     filename = doc.getElementsByTagName("source_filename")
     fname = filename[0].firstChild.nodeValue
     base = os.path.splitext(os.path.basename(file))[0]
     src_repo = config.repo + fname + '.mp4'
     scr_tar = config.prep + base + '.mp4'
-    nc_1 = len(config.node_1_count)
-    nc_2 = len(config.node_2_count)
-    nc_3 = len(config.node_3_count)
-    nc_4 = len(config.node_4_count)
-
-    load = [nc_1, nc_2, nc_3, nc_4]
-
-    # print(load)
 
     if min(load) == nc_1:
 

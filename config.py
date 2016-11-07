@@ -1,5 +1,6 @@
 import os.path
 from glob import glob
+import pymysql as mariadb
 
 # UNC Paths
 prep = os.path.join('F:\\Transcoder\\staging\\prep\\')
@@ -15,3 +16,7 @@ node_3_count = os.listdir('F:\\Transcoder\\staging\\node_3\\')
 node_4_count = os.listdir('F:\\Transcoder\\staging\\node_4\\')
 prep_xml = glob('F:\\Transcoder\\staging\\prep\\*xml')
 mp4_src = glob('F:\\Transcoder\\staging\\prep\\*mp4')
+
+# Database Connection
+dbc = mariadb.connect(host='localhost', user='lewis_transcode', password='tool4602', database='media_hub')
+cursor = dbc.cursor()

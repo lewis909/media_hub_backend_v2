@@ -18,5 +18,5 @@ prep_xml = glob('F:\\Transcoder\\staging\\prep\\*xml')
 mp4_src = glob('F:\\Transcoder\\staging\\prep\\*mp4')
 
 # Database Connection
-dbc = mariadb.connect(host='localhost', user='lewis_transcode', password='tool4602', database='media_hub')
-cursor = dbc.cursor()
+mariadb_connection = mariadb.connect(host='localhost', user='lewis_transcode', password='tool4602', database='media_hub')
+cursor = mariadb_connection.cursor()

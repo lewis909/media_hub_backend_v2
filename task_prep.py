@@ -9,17 +9,14 @@ if config.prep_xml:
     for file in config.prep_xml:
 
         move_time = time.ctime()
-
         doc = dom.parse(file)
         filename = doc.getElementsByTagName("source_filename")
         fname = filename[0].firstChild.nodeValue
         base = os.path.splitext(os.path.basename(file))[0]
         src_repo = config.repo + fname + '.mp4'
         scr_tar = config.prep + base + '.mp4'
-
         xml_base = os.path.basename(file)
         vid_base = os.path.basename(scr_tar)
-
         nc_1 = len(os.listdir(config.node_1_path))
         nc_2 = len(os.listdir(config.node_2_path))
         nc_3 = len(os.listdir(config.node_3_path))

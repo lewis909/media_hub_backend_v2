@@ -1,8 +1,9 @@
-# Turns timecode into seconds, e.g 01:20:30.000 = 4830.0
+# Turns timecode into seconds, e.g 01:20:30.000 = 4830.0.
 def timecode_to_secs(hours, mins, seconds):
     return int(hours) * 3600 + int(mins) * 60 + float(seconds)
 
 
+# Creates file containing target assets final duration in seconds.
 def progress_seconds(path, filename, duration):
     log_name = 'c_' + filename
     file_input = str(duration)
@@ -12,8 +13,11 @@ def progress_seconds(path, filename, duration):
     temp_log.close()
 
 
-def conform_list(path, log_name, list):
+# Creates conform list txt file.
+def conform_list(path, conform_parts):
 
-    c_list = open(path + log_name, 'w')
-    c_list.write(list)
+    c_list = open(path, 'w')
+    for i in conform_parts:
+        item = str(i).replace('\\', '\\\\')
+        c_list.write('file ' + item + '\n')
     c_list.close()

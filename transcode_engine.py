@@ -12,7 +12,6 @@ from glob import glob
 
 def transcoder():
 
-    # mp4 = glob('F:\\Transcoder\\staging\\node_1\\*.mp4')
     xml = glob('F:\\Transcoder\\staging\\node_1\\*.xml')
 
     for file in xml:
@@ -25,7 +24,9 @@ def transcoder():
         get_num_of_seg = core_xml.getElementsByTagName('number_of_segments')
         num_of_seg = get_num_of_seg[0].firstChild.nodeValue
         conform = core_xml.getElementsByTagName('conform_profile')
+        transcode_profile = core_xml.getElementsByTagName('transcode_profile')
         conform_get = conform[0].firstChild.nodeValue
+        transcode_get = transcode_profile[0].firstChild.nodeValue
         seg_1 = core_xml.getElementsByTagName("segment_1")
         seg_2 = core_xml.getElementsByTagName("segment_2")
         seg_3 = core_xml.getElementsByTagName("segment_3")
@@ -47,6 +48,8 @@ def transcoder():
         s4_conform_target = processing_temp_conform + 's4_' + base_mp4
         conform_source = processing_temp_root
         conform_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 'c_' + task_id + '.txt'
+        transcode_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 't_' + task_id + '.txt'
+        target_path = processing_temp_full + base_mp4
 
         print(move_time + ': Starting Task ' + task_id)
 
@@ -150,5 +153,13 @@ def transcoder():
         seg_list = glob(processing_temp_conform + '*.mp4')
         cml = processing_temp_conform + base + '_conform_list.txt'
         functions.conform_list(cml, seg_list)
+
+        ffmpeg_transcode = str(transcode_get)\
+            .replace('LOG_FILE.txt', transcode_log)\
+            .replace('T_PATH/CONFORM_LIST', cml)\
+            .replace('TRC_PATH/F_NAME.mp4', target_path)
+
+        print(ffmpeg_transcode)
+        subprocess.call(ffmpeg_transcode)
 
 transcoder()

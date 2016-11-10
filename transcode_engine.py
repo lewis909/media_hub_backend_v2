@@ -147,4 +147,8 @@ def transcoder():
 
         subprocess.call(ffmpeg_conform)
 
+        seg_list = glob(processing_temp_conform + '*.mp4')
+        cml = processing_temp_conform + base + '_conform_list.txt'
+        functions.conform_list(cml, seg_list)
+
 transcoder()

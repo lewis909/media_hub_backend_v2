@@ -4,6 +4,7 @@ import config
 import subprocess
 # from config import cursor as dbc
 from functions import timecode_to_secs as tc_to_secs
+import functions
 import shutil
 import xml.dom.minidom as dom
 from glob import glob
@@ -30,6 +31,7 @@ def transcoder():
         seg_3 = core_xml.getElementsByTagName("segment_3")
         seg_4 = core_xml.getElementsByTagName("segment_4")
         move_time = time.ctime()
+        seg_conform = ''
 
         print(num_of_seg)
 
@@ -81,7 +83,8 @@ def transcoder():
             seg_2_secs = tc_to_secs(*conform_seg_2_dur)
 
             total_dur = seg_1_secs + seg_2_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target
+            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + \
+                          ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target
 
         elif int(num_of_seg) == 3:
 
@@ -101,7 +104,9 @@ def transcoder():
             seg_3_secs = tc_to_secs(*conform_seg_3_dur)
 
             total_dur = seg_1_secs + seg_2_secs + seg_3_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target + ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target
+            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + \
+                          ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target + \
+                          ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target
 
         elif int(num_of_seg) == 4:
 
@@ -125,10 +130,21 @@ def transcoder():
             seg_4_secs = tc_to_secs(*conform_seg_4_dur)
 
             total_dur = seg_1_secs + seg_2_secs + seg_3_secs + seg_4_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target + ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target + ' -ss ' + seg_4_in + ' -t ' + seg_4_dur + ' ' + s4_conform_target
+            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + \
+                          ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target + \
+                          ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target + \
+                          ' -ss ' + seg_4_in + ' -t ' + seg_4_dur + ' ' + s4_conform_target
 
-        ffmpeg_conform = str(conform_get).replace('S_PATH/', conform_source).replace('F_NAME.mp4', base_mp4).replace('SEG_CONFORM', seg_conform).replace('LOG_FILE.txt', conform_log)
+        ffmpeg_conform = str(conform_get)\
+            .replace('S_PATH/', conform_source)\
+            .replace('F_NAME.mp4', base_mp4)\
+            .replace('SEG_CONFORM', seg_conform)\
+            .replace('LOG_FILE.txt', conform_log)
+
         print(ffmpeg_conform)
+
+        functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
+
         subprocess.call(ffmpeg_conform)
 
 transcoder()

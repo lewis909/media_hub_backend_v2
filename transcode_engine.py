@@ -8,6 +8,7 @@ import functions
 import shutil
 import xml.dom.minidom as dom
 from glob import glob
+import hashlib
 
 
 def transcoder():
@@ -22,9 +23,12 @@ def transcoder():
         root_element = core_xml.getElementsByTagName("manifest")
         task_id = root_element[0].attributes['task_id'].value
         get_num_of_seg = core_xml.getElementsByTagName('number_of_segments')
+        target_profile_path = core_xml.getElementsByTagName('target_path')
         num_of_seg = get_num_of_seg[0].firstChild.nodeValue
+        target_end_dir = target_profile_path[0].firstChild.nodeValue
         conform = core_xml.getElementsByTagName('conform_profile')
         transcode_profile = core_xml.getElementsByTagName('transcode_profile')
+        package_type = transcode_profile[0].attributes['package_type'].value
         conform_get = conform[0].firstChild.nodeValue
         transcode_get = transcode_profile[0].firstChild.nodeValue
         seg_1 = core_xml.getElementsByTagName("segment_1")
@@ -161,5 +165,10 @@ def transcoder():
 
         print(ffmpeg_transcode)
         subprocess.call(ffmpeg_transcode)
+
+        video_size = os.path.getsize(target_path)
+        video_checksum = hashlib.md5(open(target_path,'rb').read()).hexdigest()
+
+        functions.create_file_data(target_path, video_size, video_checksum, 'test', 'test', 'test', processing_temp_full)
 
 transcoder()

@@ -12,7 +12,6 @@ import hashlib
 
 
 def transcoder():
-
     xml = glob('F:\\Transcoder\\staging\\node_1\\*.xml')
 
     for file in xml:
@@ -29,6 +28,7 @@ def transcoder():
         conform = core_xml.getElementsByTagName('conform_profile')
         transcode_profile = core_xml.getElementsByTagName('transcode_profile')
         package_type = transcode_profile[0].attributes['package_type'].value
+        xslt_profile = transcode_profile[0].attributes['profile_name'].value
         conform_get = conform[0].firstChild.nodeValue
         transcode_get = transcode_profile[0].firstChild.nodeValue
         seg_1 = core_xml.getElementsByTagName("segment_1")
@@ -37,6 +37,7 @@ def transcoder():
         seg_4 = core_xml.getElementsByTagName("segment_4")
         move_time = time.ctime()
         seg_conform = ''
+        total_dur = ''
 
         print(num_of_seg)
 
@@ -142,10 +143,10 @@ def transcoder():
                           ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target + \
                           ' -ss ' + seg_4_in + ' -t ' + seg_4_dur + ' ' + s4_conform_target
 
-        ffmpeg_conform = str(conform_get)\
-            .replace('S_PATH/', conform_source)\
-            .replace('F_NAME.mp4', base_mp4)\
-            .replace('SEG_CONFORM', seg_conform)\
+        ffmpeg_conform = str(conform_get) \
+            .replace('S_PATH/', conform_source) \
+            .replace('F_NAME.mp4', base_mp4) \
+            .replace('SEG_CONFORM', seg_conform) \
             .replace('LOG_FILE.txt', conform_log)
 
         print(ffmpeg_conform)
@@ -154,21 +155,57 @@ def transcoder():
 
         subprocess.call(ffmpeg_conform)
 
+        shutil.move(processing_temp_root + 'core_metadata.xml', processing_temp_full + 'core_metadata.xml')
+
         seg_list = glob(processing_temp_conform + '*.mp4')
         cml = processing_temp_conform + base + '_conform_list.txt'
         functions.conform_list(cml, seg_list)
 
-        ffmpeg_transcode = str(transcode_get)\
-            .replace('LOG_FILE.txt', transcode_log)\
-            .replace('T_PATH/CONFORM_LIST', cml)\
+        ffmpeg_transcode = str(transcode_get) \
+            .replace('LOG_FILE.txt', transcode_log) \
+            .replace('T_PATH/CONFORM_LIST', cml) \
             .replace('TRC_PATH/F_NAME.mp4', target_path)
 
         print(ffmpeg_transcode)
         subprocess.call(ffmpeg_transcode)
 
         video_size = os.path.getsize(target_path)
-        video_checksum = hashlib.md5(open(target_path,'rb').read()).hexdigest()
+        video_checksum = hashlib.md5(open(target_path, 'rb').read()).hexdigest()
 
-        functions.create_file_data(target_path, video_size, video_checksum, 'test', 'test', 'test', processing_temp_full)
+        functions.create_file_data(target_path, video_size, video_checksum,
+                                   'test', 'test', 'test', processing_temp_full)
+
+        xslt_src_dir = 'F:\\Transcoder\\xslt_repo\\' + xslt_profile + '\\'
+        xslt_src_file = xslt_src_dir + xslt_profile + '.xsl'
+
+        shutil.copy(xslt_src_file, processing_temp_full)
+
+        xslt_process = 'java -jar C:\\SaxonHE9-7-0-7J\\saxon9he.jar ' + processing_temp_full + 'core_metadata.xml ' +\
+                       processing_temp_full + xslt_profile + '.xsl > ' + processing_temp_full + base_xml
+
+        print(xslt_process)
+
+        subprocess.call(str(xslt_process), shell=True)
+        final_video = processing_temp_full + base_mp4
+        final_xml = processing_temp_full + base_xml
+        final_dir = target_end_dir + base_mp4
+
+        if package_type == 'flat':
+            print('Moving Files to ' + target_end_dir)
+            shutil.move(final_video, target_end_dir)
+            shutil.move(final_xml, target_end_dir)
+        elif package_type == 'tar':
+            print('creating tar package')
+            tar_package = processing_temp_full + base_mp4 + '.tar'
+            tar = '7z a -ttar ' + tar_package + ' ' + final_video + ' ' + final_xml
+            print(tar)
+            subprocess.call(tar)
+            shutil.move(tar_package, target_end_dir)
+        elif package_type == 'dir':
+            print('Creating DIR')
+            os.mkdir(final_dir)
+            shutil.move(final_video, final_dir)
+            shutil.move(final_xml, final_dir)
+
 
 transcoder()

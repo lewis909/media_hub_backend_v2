@@ -2,7 +2,6 @@ import os.path
 import time
 import config
 import subprocess
-from config import cursor as dbc
 from functions import timecode_to_secs as tc_to_secs
 import functions
 import shutil
@@ -11,11 +10,11 @@ from glob import glob
 import hashlib
 
 
-def transcoder():
-    xml = glob('F:\\Transcoder\\staging\\node_1\\*.xml')
+def transcoder(transcode_node, cursor, dbc):
+    xml = glob(transcode_node + '*.xml')
 
     for file in xml:
-        node = config.node_1
+        node = transcode_node
         core_xml = dom.parse(file)
 
         # Core XML values
@@ -43,8 +42,8 @@ def transcoder():
 
         base = os.path.splitext(os.path.basename(file))[0]
         processing_temp_full = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\temp\\'
-        processing_temp_root = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\'
         processing_temp_conform = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\'
+        processing_temp_root = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\'
         base_xml = base + '.xml'
         base_mp4 = base + '.mp4'
         s1_conform_target = processing_temp_conform + 's1_' + base_mp4
@@ -155,8 +154,8 @@ def transcoder():
 
         sql_conform = "UPDATE task SET status ='Conforming' WHERE task_id ='" + task_id + "'"
         print(sql_conform)
-        dbc.execute(sql_conform)
-        config.mariadb_connection.commit()
+        cursor.execute(sql_conform)
+        dbc.commit()
 
         subprocess.call(ffmpeg_conform)
 
@@ -172,8 +171,9 @@ def transcoder():
             .replace('TRC_PATH/F_NAME.mp4', target_path)
 
         sql_transcode = "UPDATE task SET status ='Transcoding' WHERE task_id ='" + task_id + "'"
-        dbc.execute(sql_transcode)
-        config.mariadb_connection.commit()
+        cursor.execute(sql_transcode)
+        dbc.commit()
+
         print(ffmpeg_transcode)
         subprocess.call(ffmpeg_transcode)
 
@@ -215,8 +215,7 @@ def transcoder():
             shutil.move(final_video, final_dir)
             shutil.move(final_xml, final_dir)
 
-        sql_transcode = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
-        dbc.execute(sql_transcode)
-        config.mariadb_connection.commit()
+        sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
+        cursor.execute(sql_complete)
+        dbc.commit()
 
-transcoder()

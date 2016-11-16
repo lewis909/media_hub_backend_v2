@@ -18,9 +18,34 @@ prep_xml = glob('F:\\Transcoder\\staging\\prep\\*xml')
 mp4_src = glob('F:\\Transcoder\\staging\\prep\\*mp4')
 prog_temp = os.path.join('F:\\Transcoder\\logs\\transcode_logs\\temp\\')
 
+
 # Database Connection
-mariadb_connection = mariadb.connect(host='localhost',
-                                     user='lewis_transcode',
-                                     password='tool4602',
-                                     database='media_hub')
-cursor = mariadb_connection.cursor()
+host = 'localhost'
+user = 'lewis_transcode'
+password = 'tool4602'
+database = 'media_hub'
+
+
+dbc1 = mariadb.connect(host=host,
+                       user=user,
+                       password=password,
+                       database=database)
+
+dbc2 = mariadb.connect(host=host,
+                       user=user,
+                       password=password,
+                       database=database)
+
+dbc3 = mariadb.connect(host=host,
+                       user=user,
+                       password=password,
+                       database=database)
+
+dbc4 = mariadb.connect(host=host,
+                       user=user,
+                       password=password,
+                       database=database)
+cursor_1 = dbc1.cursor()
+cursor_2 = dbc2.cursor()
+cursor_3 = dbc3.cursor()
+cursor_4 = dbc4.cursor()

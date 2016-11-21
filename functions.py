@@ -105,5 +105,5 @@ def parse_xml(file_input):
 
     pre_s = find_seg_in_point(str(segments), segments_no)
 
-    output = 'ffmpeg -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', '')
-    return output, segments_no
+    ffmpeg_cmd = 'ffmpeg -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', '')
+    return ffmpeg_cmd, segments_no

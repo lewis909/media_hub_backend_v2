@@ -43,11 +43,12 @@ test_1, test_2 = parse_xml_2(file)
 f = str(test_1).find('seg_1_in')
 x = str(test_1).find(']', f)
 duration_values = str(test_1)
-#print(str(test_1))
+print(duration_values)
 
 
 def find_seg_in_point(dur_string, seg_number):
-    seg_list = []
+    seg_start_list = []
+    seg_duration_list = []
     while True:
         for i in range(seg_number):
             seg = 'seg_%d_in =' % (i+1)
@@ -55,9 +56,18 @@ def find_seg_in_point(dur_string, seg_number):
             if seg_1_in_s > 0:
                 seg_1_in_e = str(dur_string).find(']', seg_1_in_s)
                 seg_1_in = str(dur_string)[seg_1_in_s:seg_1_in_e - 1]
-                seg_list.append(str(seg_1_in).replace(seg, '-ss'))
+                seg_start_list.append(str(seg_1_in).replace(seg, '-ss'))
+        for i in range(seg_number):
+            seg = 'seg_%d_dur =' % (i+1)
+            seg_1_dur_s = str(dur_string).find(seg)
+            if seg_1_dur_s > 0:
+                seg_1_dur_e = str(dur_string).find(']', seg_1_dur_s)
+                seg_1_dur = str(dur_string)[seg_1_dur_s:seg_1_dur_e - 1]
+                seg_duration_list.append(str(seg_1_dur).replace(seg, '-t'))
         break
-    print(seg_list)
+    print(seg_start_list)
+    print(seg_duration_list)
+    return seg_start_list, seg_duration_list
 
 
 find_seg_in_point(duration_values, 4)

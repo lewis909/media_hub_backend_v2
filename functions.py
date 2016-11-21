@@ -49,6 +49,8 @@ def create_file_data(video_filename, video_file_size, video_checksum,
         f.write(xmlstr)
 
 
+# Dynamic ffmpeg conform command function
+# Takes result Element attribute dictionary and merges each entry into a list
 def seg_element(xml_root, element_path):
     list_a = []
     for elem in xml_root.iterfind(element_path):
@@ -58,6 +60,9 @@ def seg_element(xml_root, element_path):
         return list_a
 
 
+# This does all the heavy lifting for parse_xml.
+# The segment in-point and duration are picked out of the output from seg_element.
+# A list of conform parts is created, all 3 lists are zipped and the FFMPEG command is formatted.
 def find_seg_in_point(dur_string, seg_number):
     seg_start_list = []
     seg_duration_list = []
@@ -87,7 +92,8 @@ def find_seg_in_point(dur_string, seg_number):
     return in_point_and_dur
 
 
-def parse_xml_2(file_input):
+# The container for find_seg_in_in_point and seg element.
+def parse_xml(file_input):
     tree = ET.parse(file_input)
     root = tree.getroot()
     segments_no = int(root.find('file_info/number_of_segments').text)
@@ -100,4 +106,4 @@ def parse_xml_2(file_input):
     pre_s = find_seg_in_point(str(segments), segments_no)
 
     output = 'ffmpeg -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', '')
-    return output
+    return output, segments_no

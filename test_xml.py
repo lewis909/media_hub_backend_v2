@@ -50,35 +50,28 @@ def find_seg_in_point(dur_string, seg_number):
     while True:
         for i in range(seg_number):
             seg = 'seg_%d_in =' % (i+1)
-            seg_1_in_s = str(dur_string).find(seg)
-            if seg_1_in_s > 0:
-                seg_1_in_e = str(dur_string).find(']', seg_1_in_s)
-                seg_1_in = str(dur_string)[seg_1_in_s:seg_1_in_e - 1]
-                seg_start_list.append(str(seg_1_in).replace(seg, '-ss'))
+            seg_in_s = str(dur_string).find(seg)
+            if seg_in_s > 0:
+                seg_in_e = str(dur_string).find(']', seg_in_s)
+                seg_in = str(dur_string)[seg_in_s:seg_in_e - 1]
+                seg_start_list.append(str(seg_in).replace(seg, '-ss'))
         for i in range(seg_number):
             seg = 'seg_%d_dur =' % (i + 1)
             file_num ='C_%d_FILE.MP4' % (i + 1)
             c_file_list.append(file_num)
-            seg_1_dur_s = str(dur_string).find(seg)
-            if seg_1_dur_s > 0:
-                seg_1_dur_e = str(dur_string).find(']', seg_1_dur_s)
-                seg_1_dur = str(dur_string)[seg_1_dur_s:seg_1_dur_e - 1]
-                seg_duration_list.append(str(seg_1_dur).replace(seg, '-t'))
+            seg_dur_s = str(dur_string).find(seg)
+            if seg_dur_s > 0:
+                seg_dur_e = str(dur_string).find(']', seg_dur_s)
+                seg_dur = str(dur_string)[seg_dur_s:seg_dur_e - 1]
+                seg_duration_list.append(str(seg_dur).replace(seg, '-t'))
         break
-    #print(seg_start_list)
-    #print(seg_duration_list)
 
     in_point_and_dur = list(zip(seg_start_list, seg_duration_list, c_file_list))
-    #print(in_point_and_dur)
 
     return seg_start_list, seg_duration_list, in_point_and_dur
 
 
 t_1, t_2, t_3 = find_seg_in_point(duration_values, 4)
 print('ffmpeg -i FILE_NAME ' + str(t_3)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', ''))
-# print(test_2)
-# print(f)
-# print(x)
-# print(z.replace('seg_1_in =', '-ss'))
 
 

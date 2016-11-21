@@ -29,16 +29,42 @@ def parse_xml_2(file_input):
         path = 'file_info/segment_%d' % (i+1)
         segments.append(seg_element(root, path))
 
-    return segments
+    ffmpeg_start_str = 'ffmpeg -i test.mp4 '
+    ffmpeg_seg_cmd = 'FLAG-ss in_point -t out_point target_file.mp4 '
 
 
-test = parse_xml_2(file)
-f = str(test).find('seg_1_in')
-x = str(test).find(']', f + 1)
-z = str(test)[f:x - 1]
 
-print(test)
-print(f)
-print(x)
-print(z)
+    ffmpeg_cmd = ffmpeg_start_str + ffmpeg_seg_cmd * segments_no
+
+    return segments, ffmpeg_cmd
+
+
+test_1, test_2 = parse_xml_2(file)
+f = str(test_1).find('seg_1_in')
+x = str(test_1).find(']', f)
+duration_values = str(test_1)
+#print(str(test_1))
+
+
+def find_seg_in_point(dur_string, seg_number):
+    seg_list = []
+    while True:
+        for i in range(seg_number):
+            seg = 'seg_%d_in =' % (i+1)
+            seg_1_in_s = str(dur_string).find(seg)
+            if seg_1_in_s > 0:
+                seg_1_in_e = str(dur_string).find(']', seg_1_in_s)
+                seg_1_in = str(dur_string)[seg_1_in_s:seg_1_in_e - 1]
+                seg_list.append(str(seg_1_in).replace(seg, '-ss'))
+        break
+    print(seg_list)
+
+
+find_seg_in_point(duration_values, 4)
+
+# print(test_2)
+# print(f)
+# print(x)
+# print(z.replace('seg_1_in =', '-ss'))
+
 

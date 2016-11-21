@@ -47,3 +47,57 @@ def create_file_data(video_filename, video_file_size, video_checksum,
     xmlstr = minidom.parseString(ET.tostring(file_data)).toprettyxml(indent="   ")
     with open(path + 'file_data.xml', "w") as f:
         f.write(xmlstr)
+
+
+def seg_element(xml_root, element_path):
+    list_a = []
+    for elem in xml_root.iterfind(element_path):
+        a = elem.attrib
+        for i in a:
+            list_a.append([i + ' = ' + a[i]])
+        return list_a
+
+
+def find_seg_in_point(dur_string, seg_number):
+    seg_start_list = []
+    seg_duration_list = []
+    c_file_list = []
+    while True:
+        for i in range(seg_number):
+            seg = 'seg_%d_in =' % (i+1)
+            seg_in_s = str(dur_string).find(seg)
+            if seg_in_s > 0:
+                seg_in_e = str(dur_string).find(']', seg_in_s)
+                seg_in = str(dur_string)[seg_in_s:seg_in_e - 1]
+                seg_start_list.append(str(seg_in).replace(seg, '-ss'))
+        for i in range(seg_number):
+            seg = 'seg_%d_dur =' % (i + 1)
+            seg_dur_s = str(dur_string).find(seg)
+            if seg_dur_s > 0:
+                seg_dur_e = str(dur_string).find(']', seg_dur_s)
+                seg_dur = str(dur_string)[seg_dur_s:seg_dur_e - 1]
+                seg_duration_list.append(str(seg_dur).replace(seg, '-t'))
+        for i in range(seg_number):
+            file_num ='C_%d_FILE.MP4' % (i + 1)
+            c_file_list.append(file_num)
+        break
+
+    in_point_and_dur = list(zip(seg_start_list, seg_duration_list, c_file_list))
+
+    return in_point_and_dur
+
+
+def parse_xml_2(file_input):
+    tree = ET.parse(file_input)
+    root = tree.getroot()
+    segments_no = int(root.find('file_info/number_of_segments').text)
+    segments = []
+
+    for i in range(segments_no):
+        path = 'file_info/segment_%d' % (i+1)
+        segments.append(seg_element(root, path))
+
+    pre_s = find_seg_in_point(str(segments), segments_no)
+
+    output = 'ffmpeg -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', '')
+    return output

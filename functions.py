@@ -63,7 +63,7 @@ def seg_element(xml_root, element_path):
 # This does all the heavy lifting for parse_xml.
 # The segment in-point and duration are picked out of the output from seg_element.
 # A list of conform parts is created, all 3 lists are zipped and the FFMPEG command is formatted.
-def find_seg_in_point(dur_string, seg_number):
+def find_seg_in_point(dur_string, seg_number, conform_path, file_name):
     seg_start_list = []
     seg_duration_list = []
     c_file_list = []
@@ -83,7 +83,7 @@ def find_seg_in_point(dur_string, seg_number):
                 seg_dur = str(dur_string)[seg_dur_s:seg_dur_e - 1]
                 seg_duration_list.append(str(seg_dur).replace(seg, '-t'))
         for i in range(seg_number):
-            file_num ='C_%d_FILE.MP4' % (i + 1)
+            file_num = conform_path + 'C_%d_' % (i + 1) + file_name
             c_file_list.append(file_num)
         break
 
@@ -93,7 +93,7 @@ def find_seg_in_point(dur_string, seg_number):
 
 
 # The container for find_seg_in_in_point and seg element.
-def parse_xml(file_input):
+def parse_xml(file_input, conform_path, base_file_name):
     tree = ET.parse(file_input)
     root = tree.getroot()
     segments_no = int(root.find('file_info/number_of_segments').text)
@@ -103,7 +103,7 @@ def parse_xml(file_input):
         path = 'file_info/segment_%d' % (i+1)
         segments.append(seg_element(root, path))
 
-    pre_s = find_seg_in_point(str(segments), segments_no)
+    pre_s = find_seg_in_point(str(segments), segments_no, conform_path, base_file_name)
 
     ffmpeg_cmd = 'ffmpeg -progress LOGFILE -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', '')
     return ffmpeg_cmd, segments_no

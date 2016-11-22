@@ -57,11 +57,8 @@ def transcoder(transcode_node, cursor, dbc):
             shutil.move(node + base_mp4, processing_temp_root)
             shutil.move(node + base_xml, core_metadata_path)
 
-        ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path)
-        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source)\
-            .replace('C_1_FILE.MP4', s1_conform_target).replace('C_2_FILE.MP4', s2_conform_target)\
-            .replace('C_3_FILE.MP4', s3_conform_target).replace('C_4_FILE.MP4', s4_conform_target)\
-            .replace('LOGFILE', conform_log)
+        ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,  base_mp4)
+        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source).replace('LOGFILE', conform_log)
 
         functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
 

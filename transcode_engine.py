@@ -2,7 +2,6 @@ import os.path
 import time
 import config
 import subprocess
-from functions import timecode_to_secs as tc_to_secs
 import functions
 import shutil
 import xml.dom.minidom as dom
@@ -20,25 +19,14 @@ def transcoder(transcode_node, cursor, dbc):
         # Core XML values
         root_element = core_xml.getElementsByTagName("manifest")
         task_id = root_element[0].attributes['task_id'].value
-        get_num_of_seg = core_xml.getElementsByTagName('number_of_segments')
         target_profile_path = core_xml.getElementsByTagName('target_path')
-        num_of_seg = get_num_of_seg[0].firstChild.nodeValue
         target_end_dir = target_profile_path[0].firstChild.nodeValue
-        conform = core_xml.getElementsByTagName('conform_profile')
         transcode_profile = core_xml.getElementsByTagName('transcode_profile')
         package_type = transcode_profile[0].attributes['package_type'].value
         xslt_profile = transcode_profile[0].attributes['profile_name'].value
-        conform_get = conform[0].firstChild.nodeValue
         transcode_get = transcode_profile[0].firstChild.nodeValue
-        seg_1 = core_xml.getElementsByTagName("segment_1")
-        seg_2 = core_xml.getElementsByTagName("segment_2")
-        seg_3 = core_xml.getElementsByTagName("segment_3")
-        seg_4 = core_xml.getElementsByTagName("segment_4")
         move_time = time.ctime()
-        seg_conform = ''
         total_dur = ''
-
-        print(num_of_seg)
 
         base = os.path.splitext(os.path.basename(file))[0]
         processing_temp_full = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\temp\\'
@@ -50,10 +38,11 @@ def transcoder(transcode_node, cursor, dbc):
         s2_conform_target = processing_temp_conform + 's2_' + base_mp4
         s3_conform_target = processing_temp_conform + 's3_' + base_mp4
         s4_conform_target = processing_temp_conform + 's4_' + base_mp4
-        conform_source = processing_temp_root
+        conform_source = processing_temp_root + base_mp4
         conform_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 'c_' + task_id + '.txt'
         transcode_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 't_' + task_id + '.txt'
         target_path = processing_temp_full + base_mp4
+        core_metadata_path = processing_temp_root + '\\core_metadata.xml'
 
         print(move_time + ': Starting Task ' + task_id)
 
@@ -62,93 +51,17 @@ def transcoder(transcode_node, cursor, dbc):
             os.makedirs(processing_temp_full)
             print(move_time + ': Moving files to ' + processing_temp_root)
             shutil.move(node + base_mp4, processing_temp_root)
-            shutil.move(node + base_xml, processing_temp_root + '\\core_metadata.xml')
+            shutil.move(node + base_xml, core_metadata_path)
         else:
             print(move_time + ': Folder structure already exists, moving files to ' + processing_temp_root)
             shutil.move(node + base_mp4, processing_temp_root)
-            shutil.move(node + base_xml, processing_temp_root + '\\core_metadata.xml')
+            shutil.move(node + base_xml, core_metadata_path)
 
-        if int(num_of_seg) == 1:
-
-            seg_1_in = seg_1[0].attributes['seg_1_in'].value
-            seg_1_dur = seg_1[0].attributes['seg_1_dur'].value
-            conform_seg_1_dur = str(seg_1_dur).split(':')
-            seg_1_secs = tc_to_secs(*conform_seg_1_dur)
-
-            total_dur = seg_1_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target
-
-        elif int(num_of_seg) == 2:
-
-            seg_1_in = seg_1[0].attributes['seg_1_in'].value
-            seg_1_dur = seg_1[0].attributes['seg_1_dur'].value
-            seg_2_in = seg_2[0].attributes['seg_2_in'].value
-            seg_2_dur = seg_2[0].attributes['seg_2_dur'].value
-            conform_seg_1_dur = str(seg_1_dur).split(':')
-            conform_seg_2_dur = str(seg_2_dur).split(':')
-            seg_1_secs = tc_to_secs(*conform_seg_1_dur)
-            seg_2_secs = tc_to_secs(*conform_seg_2_dur)
-
-            total_dur = seg_1_secs + seg_2_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + \
-                          ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target
-
-        elif int(num_of_seg) == 3:
-
-            seg_1_in = seg_1[0].attributes['seg_1_in'].value
-            seg_1_dur = seg_1[0].attributes['seg_1_dur'].value
-            seg_2_in = seg_2[0].attributes['seg_2_in'].value
-            seg_2_dur = seg_2[0].attributes['seg_2_dur'].value
-            seg_3_in = seg_3[0].attributes['seg_3_in'].value
-            seg_3_dur = seg_3[0].attributes['seg_3_dur'].value
-
-            conform_seg_1_dur = str(seg_1_dur).split(':')
-            conform_seg_2_dur = str(seg_2_dur).split(':')
-            conform_seg_3_dur = str(seg_3_dur).split(':')
-
-            seg_1_secs = tc_to_secs(*conform_seg_1_dur)
-            seg_2_secs = tc_to_secs(*conform_seg_2_dur)
-            seg_3_secs = tc_to_secs(*conform_seg_3_dur)
-
-            total_dur = seg_1_secs + seg_2_secs + seg_3_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + \
-                          ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target + \
-                          ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target
-
-        elif int(num_of_seg) == 4:
-
-            seg_1_in = seg_1[0].attributes['seg_1_in'].value
-            seg_1_dur = seg_1[0].attributes['seg_1_dur'].value
-            seg_2_in = seg_2[0].attributes['seg_2_in'].value
-            seg_2_dur = seg_2[0].attributes['seg_2_dur'].value
-            seg_3_in = seg_3[0].attributes['seg_3_in'].value
-            seg_3_dur = seg_3[0].attributes['seg_3_dur'].value
-            seg_4_in = seg_4[0].attributes['seg_4_in'].value
-            seg_4_dur = seg_4[0].attributes['seg_4_dur'].value
-
-            conform_seg_1_dur = str(seg_1_dur).split(':')
-            conform_seg_2_dur = str(seg_2_dur).split(':')
-            conform_seg_3_dur = str(seg_3_dur).split(':')
-            conform_seg_4_dur = str(seg_4_dur).split(':')
-
-            seg_1_secs = tc_to_secs(*conform_seg_1_dur)
-            seg_2_secs = tc_to_secs(*conform_seg_2_dur)
-            seg_3_secs = tc_to_secs(*conform_seg_3_dur)
-            seg_4_secs = tc_to_secs(*conform_seg_4_dur)
-
-            total_dur = seg_1_secs + seg_2_secs + seg_3_secs + seg_4_secs
-            seg_conform = '-ss ' + seg_1_in + ' -t ' + seg_1_dur + ' ' + s1_conform_target + \
-                          ' -ss ' + seg_2_in + ' -t ' + seg_2_dur + ' ' + s2_conform_target + \
-                          ' -ss ' + seg_3_in + ' -t ' + seg_3_dur + ' ' + s3_conform_target + \
-                          ' -ss ' + seg_4_in + ' -t ' + seg_4_dur + ' ' + s4_conform_target
-
-        ffmpeg_conform = str(conform_get) \
-            .replace('S_PATH/', conform_source) \
-            .replace('F_NAME.mp4', base_mp4) \
-            .replace('SEG_CONFORM', seg_conform) \
-            .replace('LOG_FILE.txt', conform_log)
-
-        print(ffmpeg_conform)
+        ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path)
+        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source)\
+            .replace('C_1_FILE.MP4', s1_conform_target).replace('C_2_FILE.MP4', s2_conform_target)\
+            .replace('C_3_FILE.MP4', s3_conform_target).replace('C_4_FILE.MP4', s4_conform_target)\
+            .replace('LOGFILE', conform_log)
 
         functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
 
@@ -156,7 +69,7 @@ def transcoder(transcode_node, cursor, dbc):
         print(sql_conform)
         cursor.execute(sql_conform)
         dbc.commit()
-
+        print(ffmpeg_conform)
         subprocess.call(ffmpeg_conform)
 
         shutil.move(processing_temp_root + 'core_metadata.xml', processing_temp_full + 'core_metadata.xml')

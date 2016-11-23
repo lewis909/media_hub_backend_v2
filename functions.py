@@ -2,6 +2,7 @@ import xml.etree.cElementTree as ET
 import os
 from xml.dom import minidom
 
+
 # Turns timecode into seconds, e.g 01:20:30.000 = 4830.0.
 def timecode_to_secs(hours, mins, seconds):
     return int(hours) * 3600 + int(mins) * 60 + float(seconds)
@@ -39,7 +40,7 @@ def create_file_data(video_filename, video_file_size, video_checksum,
     ET.SubElement(video_file, 'file_name',).text = str(video_base) + str(video_ext)
     ET.SubElement(video_file, 'file_size',).text = str(video_file_size)
     ET.SubElement(video_file, 'md5_checksum',).text = str(video_checksum)
-    
+
     ET.SubElement(image_1, 'file_name',).text = str(image_filename)
     ET.SubElement(image_1, 'file_size',).text = str(image_file_size)
     ET.SubElement(image_1, 'md5_checksum',).text = str(image_checksum)
@@ -86,9 +87,7 @@ def find_seg_in_point(dur_string, seg_number, conform_path, file_name):
             file_num = conform_path + 'C_%d_' % (i + 1) + file_name
             c_file_list.append(file_num)
         break
-
     in_point_and_dur = list(zip(seg_start_list, seg_duration_list, c_file_list))
-
     return in_point_and_dur
 
 
@@ -98,7 +97,6 @@ def parse_xml(file_input, conform_path, base_file_name):
     root = tree.getroot()
     segments_no = int(root.find('file_info/number_of_segments').text)
     segments = []
-
     for i in range(segments_no):
         path = 'file_info/segment_%d' % (i+1)
         segments.append(seg_element(root, path))

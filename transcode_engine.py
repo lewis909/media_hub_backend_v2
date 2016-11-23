@@ -27,20 +27,15 @@ def transcoder(transcode_node, cursor, dbc):
         transcode_get = transcode_profile[0].firstChild.nodeValue
         move_time = time.ctime()
         total_dur = ''
-
         base = os.path.splitext(os.path.basename(file))[0]
         processing_temp_full = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\temp\\'
         processing_temp_conform = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\'
         processing_temp_root = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\'
-        base_xml = base + '.xml'
-        base_mp4 = base + '.mp4'
-        s1_conform_target = processing_temp_conform + 's1_' + base_mp4
-        s2_conform_target = processing_temp_conform + 's2_' + base_mp4
-        s3_conform_target = processing_temp_conform + 's3_' + base_mp4
-        s4_conform_target = processing_temp_conform + 's4_' + base_mp4
-        conform_source = processing_temp_root + base_mp4
         conform_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 'c_' + task_id + '.txt'
         transcode_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 't_' + task_id + '.txt'
+        base_xml = base + '.xml'
+        base_mp4 = base + '.mp4'
+        conform_source = processing_temp_root + base_mp4
         target_path = processing_temp_full + base_mp4
         core_metadata_path = processing_temp_root + '\\core_metadata.xml'
 
@@ -128,4 +123,3 @@ def transcoder(transcode_node, cursor, dbc):
         sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
         cursor.execute(sql_complete)
         dbc.commit()
-

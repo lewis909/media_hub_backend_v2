@@ -39,10 +39,7 @@ def task_prep():
                 shutil.move(file, config.node_1_path)
                 shutil.move(scr_tar, config.node_1_path)
 
-                print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + move_time +
-                      ": The following files have been moved to Node 1:" '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base +
-                      '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base)
+                return str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' +  ": The following files have been moved to Node 1:" '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base + '\n'
 
             elif min(load) == nc_2:
 
@@ -52,10 +49,7 @@ def task_prep():
                 shutil.move(file, config.node_2_path)
                 shutil.move(scr_tar, config.node_2_path)
 
-                print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + move_time +
-                      ": The following files have been moved to Node 2:" '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base)
+                return str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + ": The following files have been moved to Node 2:" '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base + '\n'
 
             elif min(load) == nc_3:
 
@@ -65,10 +59,7 @@ def task_prep():
                 shutil.move(file, config.node_3_path)
                 shutil.move(scr_tar, config.node_3_path)
 
-                print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + move_time +
-                      ": The following files have been moved to Node 3:" '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base)
+                return str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' +  ": The following files have been moved to Node 3:" '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base + '\n'
 
             elif min(load) == nc_4:
 
@@ -78,10 +69,7 @@ def task_prep():
                 shutil.move(file, config.node_4_path)
                 shutil.move(scr_tar, config.node_4_path)
 
-                print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + move_time +
-                      ": The following files have been moved to Node 4:" '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' +
-                      str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base)
+                return str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' +  ": The following files have been moved to Node 4:" '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + xml_base + '\n' + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + vid_base + '\n'
 
     else:
         print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + 'No files')

@@ -1,6 +1,6 @@
-# Python Transcoder #
+# Python Transcoder b0.5 #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This App contains all of the files required to setup a FFMPEG transcode farm which is controlled and administered by a Web App front end.
 
 ### What is this repository for? ###
 

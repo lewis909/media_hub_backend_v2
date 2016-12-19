@@ -2,6 +2,7 @@ import os.path
 import time
 import config
 import subprocess
+from subprocess import PIPE
 import functions
 import shutil
 import xml.dom.minidom as dom
@@ -53,16 +54,19 @@ def transcoder(transcode_node, cursor, dbc):
             shutil.move(node + base_xml, core_metadata_path)
 
         ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,  base_mp4)
-        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source).replace('LOGFILE', conform_log)
+        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source).replace('LOGFILE', conform_log).replace('\\\\', '\\')
+        print(ffmpeg_conform)
 
         functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
 
         sql_conform = "UPDATE task SET status ='Conforming' WHERE task_id ='" + task_id + "'"
-        print(sql_conform)
         cursor.execute(sql_conform)
         dbc.commit()
-        print(ffmpeg_conform)
-        subprocess.call(ffmpeg_conform)
+        conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        print(conform_result.stderr)
+        c_log = open('c_' + task_id + '.txt', 'w')
+        c_log.write(conform_result.stderr)
+        c_log.close()
 
         shutil.move(processing_temp_root + 'core_metadata.xml', processing_temp_full + 'core_metadata.xml')
 
@@ -80,7 +84,11 @@ def transcoder(transcode_node, cursor, dbc):
         dbc.commit()
 
         print(ffmpeg_transcode)
-        subprocess.call(ffmpeg_transcode)
+        transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        print(transcode_result.stderr)
+        t_log = open('t_' + task_id + '.txt', 'w')
+        t_log.write(transcode_result.stderr)
+        t_log.close()
 
         video_size = os.path.getsize(target_path)
         video_checksum = hashlib.md5(open(target_path, 'rb').read()).hexdigest()

@@ -15,7 +15,7 @@ def task_prep():
         for file in prep_xml:
             print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + str(file))
 
-            move_time = time.ctime()
+            #move_time = time.ctime()
             doc = dom.parse(file)
             filename = doc.getElementsByTagName("source_filename")
             fname = filename[0].firstChild.nodeValue

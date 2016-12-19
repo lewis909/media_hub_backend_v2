@@ -11,6 +11,35 @@ def seg_element(xml_root, element_path):
         return list_a
 
 
+def find_seg_in_point(dur_string, seg_number):
+    seg_start_list = []
+    seg_duration_list = []
+    c_file_list = []
+    while True:
+        for i in range(seg_number):
+            seg = 'seg_%d_in =' % (i+1)
+            seg_in_s = str(dur_string).find(seg)
+            if seg_in_s > 0:
+                seg_in_e = str(dur_string).find(']', seg_in_s)
+                seg_in = str(dur_string)[seg_in_s:seg_in_e - 1]
+                seg_start_list.append(str(seg_in).replace(seg, '-ss'))
+        for i in range(seg_number):
+            seg = 'seg_%d_dur =' % (i + 1)
+            seg_dur_s = str(dur_string).find(seg)
+            if seg_dur_s > 0:
+                seg_dur_e = str(dur_string).find(']', seg_dur_s)
+                seg_dur = str(dur_string)[seg_dur_s:seg_dur_e - 1]
+                seg_duration_list.append(str(seg_dur).replace(seg, '-t'))
+        for i in range(seg_number):
+            file_num ='C_%d_FILE.MP4' % (i + 1)
+            c_file_list.append(file_num)
+        break
+
+    in_point_and_dur = list(zip(seg_start_list, seg_duration_list, c_file_list))
+
+    return in_point_and_dur
+
+
 def parse_xml(file_input, number_of_segments):
     tree = et.parse(file_input)
     root = tree.getroot()
@@ -29,49 +58,11 @@ def parse_xml_2(file_input):
         path = 'file_info/segment_%d' % (i+1)
         segments.append(seg_element(root, path))
 
-    ffmpeg_start_str = 'ffmpeg -i test.mp4 '
-    ffmpeg_seg_cmd = 'FLAG-ss in_point -t out_point target_file.mp4 '
-    ffmpeg_cmd = ffmpeg_start_str + ffmpeg_seg_cmd * segments_no
+    pre_s = find_seg_in_point(str(segments), segments_no)
 
-    return segments, ffmpeg_cmd
+    output = 'ffmpeg -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', '')
+    return output
 
-
-test_1, test_2 = parse_xml_2(file)
-f = str(test_1).find('seg_1_in')
-x = str(test_1).find(']', f)
-duration_values = str(test_1)
-#print(duration_values)
-
-
-def find_seg_in_point(dur_string, seg_number):
-    seg_start_list = []
-    seg_duration_list = []
-    c_file_list = []
-    while True:
-        for i in range(seg_number):
-            seg = 'seg_%d_in =' % (i+1)
-            seg_in_s = str(dur_string).find(seg)
-            if seg_in_s > 0:
-                seg_in_e = str(dur_string).find(']', seg_in_s)
-                seg_in = str(dur_string)[seg_in_s:seg_in_e - 1]
-                seg_start_list.append(str(seg_in).replace(seg, '-ss'))
-        for i in range(seg_number):
-            seg = 'seg_%d_dur =' % (i + 1)
-            file_num ='C_%d_FILE.MP4' % (i + 1)
-            c_file_list.append(file_num)
-            seg_dur_s = str(dur_string).find(seg)
-            if seg_dur_s > 0:
-                seg_dur_e = str(dur_string).find(']', seg_dur_s)
-                seg_dur = str(dur_string)[seg_dur_s:seg_dur_e - 1]
-                seg_duration_list.append(str(seg_dur).replace(seg, '-t'))
-        break
-
-    in_point_and_dur = list(zip(seg_start_list, seg_duration_list, c_file_list))
-
-    return seg_start_list, seg_duration_list, in_point_and_dur
-
-
-t_1, t_2, t_3 = find_seg_in_point(duration_values, 4)
-print('ffmpeg -i FILE_NAME ' + str(t_3)[3:-2].replace("'", '').replace(',', '').replace('(', '').replace(')', ''))
+print(parse_xml_2(file))
 
 

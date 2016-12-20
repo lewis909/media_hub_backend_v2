@@ -3,9 +3,10 @@ import task_prep
 import time
 import datetime
 
+# Staging Path
 path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
 
-
+# Checks path for XML file, if an XML is found task_prep() is executed.
 while len(path) >= 0:
 
     log = open('log_file.txt', 'a')

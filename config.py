@@ -17,6 +17,7 @@ node_4_count = os.listdir('F:\\Transcoder\\staging\\node_4\\')
 prep_xml = glob('F:\\Transcoder\\staging\\prep\\*xml')
 mp4_src = glob('F:\\Transcoder\\staging\\prep\\*mp4')
 prog_temp = os.path.join('F:\\Transcoder\\logs\\transcode_logs\\temp\\')
+transcode_logs = os.path.join('F:\\Transcoder\\logs\\transcode_logs\\')
 
 
 # Database Connections

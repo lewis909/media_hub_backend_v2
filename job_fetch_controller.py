@@ -3,7 +3,7 @@ import task_prep
 import time
 import datetime
 
-# Staging Path
+#Staging Path
 path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
 
 # Checks path for XML file, if an XML is found task_prep() is executed.

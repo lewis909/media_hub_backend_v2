@@ -49,8 +49,10 @@ def create_file_data(video_filename, video_file_size, video_checksum,
     with open(path + 'file_data.xml', "w") as f:
         f.write(xmlstr)
 
-
+"""
 # Dynamic ffmpeg conform command function
+"""
+
 # Takes result Element attribute dictionary and merges each entry into a list
 def seg_element(xml_root, element_path):
     list_a = []

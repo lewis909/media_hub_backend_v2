@@ -72,11 +72,14 @@ def transcoder(transcode_node, cursor, dbc):
         sql_conform = "UPDATE task SET status ='Conforming' WHERE task_id ='" + task_id + "'"
         cursor.execute(sql_conform)
         dbc.commit()
-        conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        print(conform_result.stderr)
-        c_log = open(config.transcode_logs + 'c_' + task_id + '_detail.txt', 'w')
-        c_log.write(conform_result.stderr)
-        c_log.close()
+        try:
+            conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            print(conform_result.stderr)
+            c_log = open(config.transcode_logs + 'c_' + task_id + '_detail.txt', 'w')
+            c_log.write(conform_result.stderr)
+            c_log.close()
+        except ValueError:
+            print('Conform has Failed: ' + task_id)
 
         shutil.move(processing_temp_root + 'core_metadata.xml', processing_temp_full + 'core_metadata.xml')
 
@@ -94,13 +97,15 @@ def transcoder(transcode_node, cursor, dbc):
         sql_transcode = "UPDATE task SET status ='Transcoding' WHERE task_id ='" + task_id + "'"
         cursor.execute(sql_transcode)
         dbc.commit()
-
-        print(ffmpeg_transcode)
-        transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        print(transcode_result.stderr)
-        t_log = open(config.transcode_logs + 't_' + task_id + '_detail.txt', 'w')
-        t_log.write(transcode_result.stderr)
-        t_log.close()
+        try:
+            print(ffmpeg_transcode)
+            transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            print(transcode_result.stderr)
+            t_log = open(config.transcode_logs + 't_' + task_id + '_detail.txt', 'w')
+            t_log.write(transcode_result.stderr)
+            t_log.close()
+        except ValueError:
+            print('Transcode has failed: ' + task_id)
 
         video_size = os.path.getsize(target_path)
         video_checksum = hashlib.md5(open(target_path, 'rb').read()).hexdigest()

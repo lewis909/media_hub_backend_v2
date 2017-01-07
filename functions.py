@@ -2,6 +2,9 @@ import xml.etree.cElementTree as ET
 import os
 from xml.dom import minidom
 
+# import Metadata Profile files
+from metadata_profiles import amazon, xbox
+
 
 # Turns timecode into seconds, e.g 01:20:30.000 = 4830.0.
 def timecode_to_secs(hours, mins, seconds):
@@ -109,8 +112,9 @@ def parse_xml(file_input, conform_path, base_file_name):
         .replace('(', '').replace(')', '')
     return ffmpeg_cmd, segments_no
 
+# Metadata creation functions
 
-def get_metadata(core_metadata_xml, file_data):
+def get_metadata(core_metadata_xml, file_data, target_path):
     # Mapping from Core_metadata.xml
     core_tree = ET.parse(core_metadata_xml)
     core_root = core_tree.getroot()
@@ -152,3 +156,11 @@ def get_metadata(core_metadata_xml, file_data):
            image_file_name,\
            image_file_size,\
            image_md5_checksum
+
+# dictionary of metadata profiles
+metadata_profiles = {
+
+    'amazon': amazon.create_xml,
+    'xbox': xbox.create_xml,
+
+}

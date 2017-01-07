@@ -3,7 +3,7 @@ import task_prep
 import time
 import datetime
 
-#Staging Path
+# Staging Path
 path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
 
 # Checks path for XML file, if an XML is found task_prep() is executed.
@@ -24,7 +24,8 @@ while len(path) >= 0:
         time.sleep(5)
         path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
         if path == 0:
-            log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': No Files found, waiting for next run\n'))
+            log.write(str(datetime.datetime.utcnow()
+                          .strftime("%Y-%m-%d %H:%M:%S") + ': No Files found, waiting for next run\n'))
             break
     print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': no files\n'))
     log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': no files\n'))

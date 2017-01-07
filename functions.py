@@ -139,6 +139,8 @@ def get_metadata(core_metadata_xml, file_data, target_path):
     image_file_name = fd_root.find('image_1/file_name').text
     image_file_size = fd_root.find('image_1/file_size').text
     image_md5_checksum = fd_root.find('image_1/md5_checksum').text
+
+    print(target_path)
     return task_id,\
            mat_id,\
            series_title,\
@@ -155,7 +157,8 @@ def get_metadata(core_metadata_xml, file_data, target_path):
            vid_md5_checksum,\
            image_file_name,\
            image_file_size,\
-           image_md5_checksum
+           image_md5_checksum,\
+           target_path
 
 # dictionary of metadata profiles
 metadata_profiles = {

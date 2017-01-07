@@ -29,16 +29,16 @@ def transcoder(transcode_node, cursor, dbc):
         move_time = time.ctime()
         total_dur = ''
         base = os.path.splitext(os.path.basename(file))[0]
+        processing_temp_root = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\'
         processing_temp_full = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\temp\\'
         processing_temp_conform = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\'
-        processing_temp_root = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\'
         conform_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 'c_' + task_id + '.txt'
         transcode_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 't_' + task_id + '.txt'
         base_xml = base + '.xml'
         base_mp4 = base + '.mp4'
         conform_source = processing_temp_root + base_mp4
         target_path = processing_temp_full + base_mp4
-        core_metadata_path = processing_temp_root + '\\core_metadata.xml'
+        core_metadata_path = processing_temp_root + 'core_metadata.xml'
         file_data_xml = processing_temp_full + 'file_data.xml'
         final_xml = processing_temp_full + base_xml
 
@@ -67,8 +67,7 @@ def transcoder(transcode_node, cursor, dbc):
         ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,  base_mp4)
         ffmpeg_conform = str(ffmpeg_conform_cmd)\
             .replace('INPUT_FILE', conform_source)\
-            .replace('LOGFILE', conform_log)\
-            .replace('\\\\', '\\')
+            .replace('LOGFILE', conform_log)
         print(ffmpeg_conform)
 
         functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)

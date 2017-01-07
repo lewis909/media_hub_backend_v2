@@ -24,7 +24,7 @@ def transcoder(transcode_node, cursor, dbc):
         target_end_dir = target_profile_path[0].firstChild.nodeValue
         transcode_profile = core_xml.getElementsByTagName('transcode_profile')
         package_type = transcode_profile[0].attributes['package_type'].value
-        xslt_profile = transcode_profile[0].attributes['profile_name'].value
+        xml_profile = transcode_profile[0].attributes['profile_name'].value
         transcode_get = transcode_profile[0].firstChild.nodeValue
         move_time = time.ctime()
         total_dur = ''
@@ -39,6 +39,8 @@ def transcoder(transcode_node, cursor, dbc):
         conform_source = processing_temp_root + base_mp4
         target_path = processing_temp_full + base_mp4
         core_metadata_path = processing_temp_root + '\\core_metadata.xml'
+        file_data_xml = processing_temp_full + 'file_data.xml'
+        final_xml = processing_temp_full + base_xml
 
         # Processing starts
         print(move_time + ': Starting Task ' + task_id)
@@ -63,7 +65,10 @@ def transcoder(transcode_node, cursor, dbc):
 
         # Conform section.
         ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,  base_mp4)
-        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source).replace('LOGFILE', conform_log).replace('\\\\', '\\')
+        ffmpeg_conform = str(ffmpeg_conform_cmd)\
+            .replace('INPUT_FILE', conform_source)\
+            .replace('LOGFILE', conform_log)\
+            .replace('\\\\', '\\')
         print(ffmpeg_conform)
 
         functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
@@ -114,18 +119,10 @@ def transcoder(transcode_node, cursor, dbc):
         functions.create_file_data(target_path, video_size, video_checksum,
                                    'test', 'test', 'test', processing_temp_full)
 
-        # XSLT processing.
-        xslt_src_dir = 'F:\\Transcoder\\xslt_repo\\' + xslt_profile + '\\'
-        xslt_src_file = xslt_src_dir + xslt_profile + '.xsl'
+        # Create metadata
 
-        shutil.copy(xslt_src_file, processing_temp_full)
-
-        xslt_process = 'java -jar C:\\SaxonHE9-7-0-7J\\saxon9he.jar ' + processing_temp_full + 'core_metadata.xml ' +\
-                       processing_temp_full + xslt_profile + '.xsl > ' + processing_temp_full + base_xml
-
-        print(xslt_process)
-
-        subprocess.call(str(xslt_process), shell=True)
+        functions.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
+                                                                         file_data_xml, final_xml))
 
         # Final package delivery.
         final_video = processing_temp_full + base_mp4

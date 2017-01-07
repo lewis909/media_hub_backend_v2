@@ -108,3 +108,47 @@ def parse_xml(file_input, conform_path, base_file_name):
     ffmpeg_cmd = 'ffmpeg -progress LOGFILE -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '')\
         .replace('(', '').replace(')', '')
     return ffmpeg_cmd, segments_no
+
+
+def get_metadata(core_metadata_xml, file_data):
+    # Mapping from Core_metadata.xml
+    core_tree = ET.parse(core_metadata_xml)
+    core_root = core_tree.getroot()
+    task_id = core_root.get('task_id')
+    mat_id = core_root.find('asset_metadata/material_id').text
+    series_title = core_root.find('asset_metadata/series_title').text
+    season_title = core_root.find('asset_metadata/season_title').text
+    season_number = core_root.find('asset_metadata/season_number').text
+    episode_title = core_root.find('asset_metadata/episode_title').text
+    episode_number = core_root.find('asset_metadata/episode_number').text
+    start_date = core_root.find('asset_metadata/start_date').text
+    end_date = core_root.find('asset_metadata/end_date').text
+    rating = core_root.find('asset_metadata/ratings').text
+    synopsis = core_root.find('asset_metadata/synopsis').text
+
+    # Mapping from file_data.xml
+    fd_tree = ET.parse(file_data)
+    fd_root = fd_tree.getroot()
+    vid_file_name = fd_root.find('video_file/file_name').text
+    vid_file_size = fd_root.find('video_file/file_size').text
+    vid_md5_checksum = fd_root.find('video_file/md5_checksum').text
+    image_file_name = fd_root.find('image_1/file_name').text
+    image_file_size = fd_root.find('image_1/file_size').text
+    image_md5_checksum = fd_root.find('image_1/md5_checksum').text
+    return task_id,\
+           mat_id,\
+           series_title,\
+           season_title,\
+           season_number,\
+           episode_title,\
+           episode_number,\
+           start_date,\
+           end_date,\
+           rating,\
+           synopsis,\
+           vid_file_name,\
+           vid_file_size,\
+           vid_md5_checksum,\
+           image_file_name,\
+           image_file_size,\
+           image_md5_checksum

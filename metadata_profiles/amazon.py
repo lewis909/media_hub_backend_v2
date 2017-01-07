@@ -4,7 +4,7 @@ from xml.dom import minidom
 
 def create_xml(task_id, mat_id, series_title, season_title, season_number, episode_title,
              episode_number, start_date, end_date, rating, synopsis, vid_file_name, vid_file_size,
-             vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum):
+             vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum, target_path):
 
     root = ET.Element('package')
     asset_metadata = ET.SubElement(root, 'asset_metadata')
@@ -34,7 +34,9 @@ def create_xml(task_id, mat_id, series_title, season_title, season_number, episo
     ET.SubElement(image_1, 'file_size', ).text = image_file_size
     ET.SubElement(image_1, 'md5_checksum', ).text = image_md5_checksum
 
+    print(target_path)
+
     xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml(indent="   ")
-    with open('test.xml', "w") as f:
+    with open(target_path, "w") as f:
         f.write(xmlstr)
         f.close()

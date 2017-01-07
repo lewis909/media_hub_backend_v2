@@ -34,4 +34,3 @@ while len(path) >= 0:
 
 else:
     print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Ending process\n'))
-

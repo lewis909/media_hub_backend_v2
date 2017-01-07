@@ -7,7 +7,7 @@ import datetime
 path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
 
 # Checks path for XML file, if an XML is found task_prep() is executed.
-while len(path) >= 0:
+while True:
 
     log = open('log_file.txt', 'a')
 
@@ -31,6 +31,3 @@ while len(path) >= 0:
     log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': no files\n'))
     log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Ending process\n'))
     log.close()
-
-else:
-    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Ending process\n'))

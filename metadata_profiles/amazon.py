@@ -34,8 +34,6 @@ def create_xml(task_id, mat_id, series_title, season_title, season_number, episo
     ET.SubElement(image_1, 'file_size', ).text = image_file_size
     ET.SubElement(image_1, 'md5_checksum', ).text = image_md5_checksum
 
-    print(target_path)
-
     xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml(indent="   ")
     with open(target_path, "w") as f:
         f.write(xmlstr)

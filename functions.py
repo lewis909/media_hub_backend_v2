@@ -140,7 +140,6 @@ def get_metadata(core_metadata_xml, file_data, target_path):
     image_file_size = fd_root.find('image_1/file_size').text
     image_md5_checksum = fd_root.find('image_1/md5_checksum').text
 
-    print(target_path)
     return task_id,\
            mat_id,\
            series_title,\

@@ -65,9 +65,7 @@ def transcoder(transcode_node, cursor, dbc):
 
         # Conform section.
         ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,  base_mp4)
-        ffmpeg_conform = str(ffmpeg_conform_cmd)\
-            .replace('INPUT_FILE', conform_source)\
-            .replace('LOGFILE', conform_log)
+        ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source).replace('LOGFILE', conform_log)
         print(ffmpeg_conform)
 
         functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
@@ -119,7 +117,6 @@ def transcoder(transcode_node, cursor, dbc):
                                    'test', 'test', 'test', processing_temp_full)
 
         # Create metadata
-
         functions.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
                                                                          file_data_xml, final_xml))
 

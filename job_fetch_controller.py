@@ -2,6 +2,7 @@ from glob import glob
 import task_prep
 import time
 import datetime
+import os
 
 # Staging Path
 path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
@@ -16,10 +17,17 @@ while True:
         data = (str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Processing files\n')
         print(data)
         log.write(data + '\n')
-        task = task_prep.task_prep()
-        log.write(task)
-        path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
-        time.sleep(3)
+        for i in path:
+            try:
+                task = task_prep.task_prep()
+                log.write(task)
+                path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
+                time.sleep(3)
+            except Exception:
+                print('Deleting problem file ' + str(i))
+                os.remove(i)
+                time.sleep(3)
+                path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
     else:
         log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Waiting for files\n'))
         time.sleep(5)

@@ -166,5 +166,5 @@ def transcoder(transcode_node, cursor, dbc):
             cursor.execute(end_job)
             dbc.commit()
 
-    except ValueError:
-        print('There was an error')
+    except Exception as e:
+        print(str(e))

@@ -1,4 +1,4 @@
-from metadata_profiles import amazon, xbox
+from metadata_profiles import amazon, xbox, itunes, sky, google, virgin
 
 # dictionary of metadata profiles
 metadata_profiles = {

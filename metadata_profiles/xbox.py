@@ -4,7 +4,8 @@ from xml.dom import minidom
 
 def create_xml(task_id, mat_id, series_title, season_title, season_number, episode_title,
                episode_number, start_date, end_date, rating, synopsis, vid_file_name, vid_file_size,
-               vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum, target_path):
+               vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum, target_path, profile,
+               video_file_naming_convention, image_file_naming_convention, package_naming_convention):
 
     root = ET.Element('package')
     asset_metadata = ET.SubElement(root, 'asset_metadata')

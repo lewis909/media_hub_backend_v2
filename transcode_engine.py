@@ -8,6 +8,7 @@ import shutil
 import xml.dom.minidom as dom
 from glob import glob
 import hashlib
+from metadata_profiles import profile_dict
 
 
 def transcoder(transcode_node, cursor, dbc):
@@ -77,6 +78,7 @@ def transcoder(transcode_node, cursor, dbc):
         try:
             conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
             print(conform_result.stderr)
+            # TODO - prefix time stamp to STDOUT for FFMPEG log
             c_log = open(config.transcode_logs + 'c_' + task_id + '_detail.txt', 'w')
             c_log.write(conform_result.stderr)
             c_log.close()
@@ -88,7 +90,7 @@ def transcoder(transcode_node, cursor, dbc):
         seg_list = glob(processing_temp_conform + '*.mp4')
         cml = processing_temp_conform + base + '_conform_list.txt'
         functions.conform_list(cml, seg_list)
-
+        # TODO - Dynamic filename format for video file
         # Transcode section.
         ffmpeg_transcode = str(transcode_get) \
             .replace('LOG_FILE.txt', transcode_log) \
@@ -117,7 +119,8 @@ def transcoder(transcode_node, cursor, dbc):
                                    'test', 'test', 'test', processing_temp_full)
 
         # Create metadata
-        functions.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
+        # TODO - Dynamic filename format for xml
+        profile_dict.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
                                                                          file_data_xml, final_xml))
 
         # Final package delivery.
@@ -125,6 +128,7 @@ def transcoder(transcode_node, cursor, dbc):
         final_xml = processing_temp_full + base_xml
         final_dir = target_end_dir + base_mp4
 
+        # TODO - Dynamic filename format for Package
         # Moves all files into the target DIR
         if package_type == 'flat':
             print('Moving Files to ' + target_end_dir)

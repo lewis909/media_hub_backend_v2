@@ -3,7 +3,7 @@ import os
 from xml.dom import minidom
 
 # import Metadata Profile files
-from metadata_profiles import amazon, xbox
+
 
 
 # Turns timecode into seconds, e.g 01:20:30.000 = 4830.0.
@@ -55,6 +55,7 @@ def create_file_data(video_filename, video_file_size, video_checksum,
 """
 # Dynamic ffmpeg conform command function
 """
+
 
 # Takes result Element attribute dictionary and merges each entry into a list
 def seg_element(xml_root, element_path):
@@ -114,6 +115,7 @@ def parse_xml(file_input, conform_path, base_file_name):
 
 # Metadata creation functions
 
+
 def get_metadata(core_metadata_xml, file_data, target_path):
     # Mapping from Core_metadata.xml
     core_tree = ET.parse(core_metadata_xml)
@@ -129,6 +131,12 @@ def get_metadata(core_metadata_xml, file_data, target_path):
     end_date = core_root.find('asset_metadata/end_date').text
     rating = core_root.find('asset_metadata/ratings').text
     synopsis = core_root.find('asset_metadata/synopsis').text
+
+    # Mapping of Naming Conventions
+    profile = core_root.find('file_info/transcode_profile').attrib['profile_name']
+    video_file_naming_convention = core_root.find('file_info/video_file_naming_convention').text
+    image_file_naming_convention = core_root.find('file_info/image_file_naming_convention').text
+    package_naming_convention = core_root.find('file_info/package_naming_convention').text
 
     # Mapping from file_data.xml
     fd_tree = ET.parse(file_data)
@@ -157,12 +165,21 @@ def get_metadata(core_metadata_xml, file_data, target_path):
            image_file_name,\
            image_file_size,\
            image_md5_checksum,\
-           target_path
+           target_path,\
+           profile,\
+           video_file_naming_convention,\
+           image_file_naming_convention,\
+           package_naming_convention
 
-# dictionary of metadata profiles
-metadata_profiles = {
 
-    'amazon': amazon.create_xml,
-    'xbox': xbox.create_xml,
+def naming_convention(task_id, mat_id, series_title, season_title, season_number, episode_title,
+                      episode_number, start_date, end_date, rating, synopsis, vid_file_name, vid_file_size,
+                      vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum, target_path, profile,
+                      video_file_naming_convention, image_file_naming_convention, package_naming_convention):
 
-}
+        target_video_file_name = video_file_naming_convention.replace('PROFILE', mat_id).replace('MATID', mat_id) + '.mp4'
+        target_metadata_name = video_file_naming_convention.replace('PROFILE', mat_id).replace('MATID', mat_id) + '.xml'
+        target_image_file_name = image_file_naming_convention.replace('PROFILE', mat_id).replace('MATID', mat_id) + '.jpg'
+        target_package_name = package_naming_convention.replace('PROFILE', profile).replace('MATID', mat_id).replace('SERIESTITLE', series_title).replace('SERIESNUMBER', season_number)
+
+        return target_video_file_name, target_metadata_name, target_image_file_name, target_package_name

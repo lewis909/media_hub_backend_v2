@@ -9,6 +9,7 @@ path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
 # Checks path for XML file, if an XML is found task_prep() is executed.
 while True:
 
+    # TODO - Create dynamic logfile system
     log = open('log_file.txt', 'a')
 
     if int(len(path)):

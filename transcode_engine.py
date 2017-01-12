@@ -123,10 +123,18 @@ def transcoder(transcode_node, cursor, dbc):
         profile_dict.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
                                                                          file_data_xml, final_xml))
 
+        video_name_out, xml_name_out, image_name_out, dir_name_out = functions.naming_convention(*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
+                                                                         file_data_xml, final_xml))
+
         # Final package delivery.
         final_video = processing_temp_full + base_mp4
+        target_video_file = processing_temp_full + video_name_out + '.mp4'
+        os.rename(final_video, target_video_file)
         final_xml = processing_temp_full + base_xml
-        final_dir = target_end_dir + base_mp4
+        target_xml = processing_temp_full + xml_name_out + '.xml'
+        os.rename(final_xml, target_xml)
+        final_dir = target_end_dir + dir_name_out
+
 
         # TODO - Dynamic filename format for Package
         # Moves all files into the target DIR
@@ -137,7 +145,7 @@ def transcoder(transcode_node, cursor, dbc):
         # Wraps required files in a .tar in the target DIR
         elif package_type == 'tar':
             print('creating tar package')
-            tar_package = processing_temp_full + base_mp4 + '.tar'
+            tar_package = processing_temp_full + dir_name_out + '.tar'
             tar = '7z a -ttar ' + tar_package + ' ' + final_video + ' ' + final_xml
             print(tar)
             subprocess.call(tar)
@@ -146,8 +154,8 @@ def transcoder(transcode_node, cursor, dbc):
         elif package_type == 'dir':
             print('Creating DIR')
             os.mkdir(final_dir)
-            shutil.move(final_video, final_dir)
-            shutil.move(final_xml, final_dir)
+            shutil.move(target_video_file, final_dir)
+            shutil.move(target_xml, final_dir)
 
         # Updated database stating that the task has completed
         sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"

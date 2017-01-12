@@ -177,9 +177,9 @@ def naming_convention(task_id, mat_id, series_title, season_title, season_number
                       vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum, target_path, profile,
                       video_file_naming_convention, image_file_naming_convention, package_naming_convention):
 
-        target_video_file_name = video_file_naming_convention.replace('PROFILE', mat_id).replace('MATID', mat_id) + '.mp4'
-        target_metadata_name = video_file_naming_convention.replace('PROFILE', mat_id).replace('MATID', mat_id) + '.xml'
-        target_image_file_name = image_file_naming_convention.replace('PROFILE', mat_id).replace('MATID', mat_id) + '.jpg'
-        target_package_name = package_naming_convention.replace('PROFILE', profile).replace('MATID', mat_id).replace('SERIESTITLE', series_title).replace('SERIESNUMBER', season_number)
+        target_video_file_name = video_file_naming_convention.replace('PROFILE', profile).replace('MATID', mat_id)
+        target_metadata_name = video_file_naming_convention.replace('PROFILE', profile).replace('MATID', mat_id)
+        target_image_file_name = image_file_naming_convention.replace('PROFILE', profile).replace('MATID', mat_id)
+        target_package_name = package_naming_convention.replace('PROFILE', profile).replace('MATID', mat_id).replace('SERIESTITLE', series_title).replace('SEASONNUMBER', season_number).replace(' ', '_').replace('TASKID', task_id)
 
         return target_video_file_name, target_metadata_name, target_image_file_name, target_package_name

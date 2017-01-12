@@ -28,7 +28,7 @@ while True:
                     time.sleep(3)
                     path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
         else:
-            log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Waiting for files\n'))
             time.sleep(5)
             path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
             print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Waiting for files\n'))
+            log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Waiting for files\n'))

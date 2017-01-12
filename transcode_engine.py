@@ -90,7 +90,7 @@ def transcoder(transcode_node, cursor, dbc):
         seg_list = glob(processing_temp_conform + '*.mp4')
         cml = processing_temp_conform + base + '_conform_list.txt'
         functions.conform_list(cml, seg_list)
-        # TODO - Dynamic filename format for video file
+
         # Transcode section.
         ffmpeg_transcode = str(transcode_get) \
             .replace('LOG_FILE.txt', transcode_log) \
@@ -119,10 +119,9 @@ def transcoder(transcode_node, cursor, dbc):
                                    'test', 'test', 'test', processing_temp_full)
 
         # Create metadata
-        # TODO - Dynamic filename format for xml
         profile_dict.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
                                                                          file_data_xml, final_xml))
-
+        # file name creator
         video_name_out, xml_name_out, image_name_out, dir_name_out = functions.naming_convention(*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
                                                                          file_data_xml, final_xml))
 
@@ -135,8 +134,6 @@ def transcoder(transcode_node, cursor, dbc):
         os.rename(final_xml, target_xml)
         final_dir = target_end_dir + dir_name_out
 
-
-        # TODO - Dynamic filename format for Package
         # Moves all files into the target DIR
         if package_type == 'flat':
             print('Moving Files to ' + target_end_dir)

@@ -2,13 +2,15 @@ import os.path
 import time
 import config
 import subprocess
-from subprocess import PIPE
 import functions
 import shutil
-import xml.dom.minidom as dom
-from glob import glob
 import hashlib
+import tarfile
+import xml.dom.minidom as dom
+
 from metadata_profiles import profile_dict
+from subprocess import PIPE
+from glob import glob
 
 
 def transcoder(transcode_node, cursor, dbc):
@@ -139,16 +141,16 @@ def transcoder(transcode_node, cursor, dbc):
             # Moves all files into the target DIR
             if package_type == 'flat':
                 print('Moving Files to ' + target_end_dir)
-                shutil.move(final_video, target_end_dir)
-                shutil.move(final_xml, target_end_dir)
+                shutil.move(target_video_file, target_end_dir)
+                shutil.move(target_xml, target_end_dir)
             # Wraps required files in a .tar in the target DIR
             elif package_type == 'tar':
                 print('creating tar package')
-                tar_package = processing_temp_full + dir_name_out + '.tar'
-                tar = '7z a -ttar ' + tar_package + ' ' + final_video + ' ' + final_xml
-                print(tar)
-                subprocess.call(tar)
-                shutil.move(tar_package, target_end_dir)
+                file_list = [target_video_file, target_xml]
+                with tarfile.open(final_dir + '.tar', 'x') as tar:
+                    for t_file in file_list:
+                        tar.add(t_file, arcname=os.path.basename(t_file))
+                    tar.close()
             # Creates a DIR in the target DIR and moves package files into that DIR.
             elif package_type == 'dir':
                 print('Creating DIR')

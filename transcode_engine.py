@@ -140,33 +140,61 @@ def transcoder(transcode_node, cursor, dbc):
 
             # Moves all files into the target DIR
             if package_type == 'flat':
-                print('Moving Files to ' + target_end_dir)
-                shutil.move(target_video_file, target_end_dir)
-                shutil.move(target_xml, target_end_dir)
+                try:
+                    print('Moving Files to ' + target_end_dir)
+                    shutil.move(target_video_file, target_end_dir)
+                    shutil.move(target_xml, target_end_dir)
+                    task_state = 'complete'
+                except Exception as e:
+                    print(e)
+                    task_state = 'error'
             # Wraps required files in a .tar in the target DIR
             elif package_type == 'tar':
-                print('creating tar package')
-                file_list = [target_video_file, target_xml]
-                with tarfile.open(final_dir + '.tar', 'x') as tar:
-                    for t_file in file_list:
-                        tar.add(t_file, arcname=os.path.basename(t_file))
-                    tar.close()
+                try:
+                    print('creating tar package')
+                    file_list = [target_video_file, target_xml]
+                    with tarfile.open(final_dir + '.tar', 'x') as tar:
+                        for t_file in file_list:
+                            tar.add(t_file, arcname=os.path.basename(t_file))
+                        tar.close()
+                    task_state = 'complete'
+                except Exception as e:
+                    print(e)
+                    task_state = 'error'
             # Creates a DIR in the target DIR and moves package files into that DIR.
             elif package_type == 'dir':
-                print('Creating DIR')
-                os.mkdir(final_dir)
-                shutil.move(target_video_file, final_dir)
-                shutil.move(target_xml, final_dir)
+                try:
+                    print('Creating DIR')
+                    os.mkdir(final_dir)
+                    shutil.move(target_video_file, final_dir)
+                    shutil.move(target_xml, final_dir)
+                    task_state = 'complete'
+                except Exception as e:
+                    print(e)
+                    task_state = 'error'
 
-            # Updated database stating that the task has completed
-            sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
-            cursor.execute(sql_complete)
-            dbc.commit()
-            job_complete_time = time.ctime()
-            # Updated database stating task completion time
-            end_job = "UPDATE task SET job_end_time ='" + job_complete_time + "'WHERE task_id ='" + task_id + "'"
-            cursor.execute(end_job)
-            dbc.commit()
+            if task_state == 'complete':
+                print('Task: ' + task_id + ' complete, waiting for new job ')
+                # Updated database stating that the task has completed
+                sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
+                cursor.execute(sql_complete)
+                dbc.commit()
+                job_complete_time = time.ctime()
+                # Updated database stating task completion time
+                end_job = "UPDATE task SET job_end_time ='" + job_complete_time + "'WHERE task_id ='" + task_id + "'"
+                cursor.execute(end_job)
+                dbc.commit()
+            else:
+                print('there was an error moving onto next job')
+                # Updated database stating that the task has completed
+                sql_error = "UPDATE task SET status ='Error' WHERE task_id ='" + task_id + "'"
+                cursor.execute(sql_error)
+                dbc.commit()
+                job_complete_time = time.ctime()
+                # Updated database stating task completion time
+                end_job = "UPDATE task SET job_end_time ='" + job_complete_time + "'WHERE task_id ='" + task_id + "'"
+                cursor.execute(end_job)
+                dbc.commit()
 
     except Exception as e:
         print(str(e))

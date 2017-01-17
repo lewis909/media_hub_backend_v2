@@ -190,7 +190,7 @@ def transcoder(transcode_node, cursor, dbc):
                     end_job = "UPDATE task SET job_end_time ='" + job_complete_time + "'WHERE task_id ='" + task_id + "'"
                     cursor.execute(end_job)
                     dbc.commit()
-                else:
+                elif task_state == 'error':
                     print('there was an error moving onto next job')
                     # Updated database stating that the task has completed
                     sql_error = "UPDATE task SET status ='Error' WHERE task_id ='" + task_id + "'"

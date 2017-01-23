@@ -171,6 +171,7 @@ def get_metadata(core_metadata_xml, file_data, target_path):
            package_naming_convention
 
 
+# Creates the profiles bespoke naming convention
 def naming_convention(task_id, mat_id, series_title, season_title, season_number, episode_title,
                       episode_number, start_date, end_date, rating, synopsis, vid_file_name, vid_file_size,
                       vid_md5_checksum, image_file_name, image_file_size, image_md5_checksum, target_path, profile,

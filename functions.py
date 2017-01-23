@@ -5,7 +5,6 @@ from xml.dom import minidom
 # import Metadata Profile files
 
 
-
 # Turns timecode into seconds, e.g 01:20:30.000 = 4830.0.
 def timecode_to_secs(hours, mins, seconds):
     return int(hours) * 3600 + int(mins) * 60 + float(seconds)
@@ -52,9 +51,7 @@ def create_file_data(video_filename, video_file_size, video_checksum,
     with open(path + 'file_data.xml', "w") as f:
         f.write(xmlstr)
 
-"""
-# Dynamic ffmpeg conform command function
-"""
+# start of the Dynamic FFMPEG conform function
 
 
 # Takes result Element attribute dictionary and merges each entry into a list
@@ -112,6 +109,8 @@ def parse_xml(file_input, conform_path, base_file_name):
     ffmpeg_cmd = 'ffmpeg -progress LOGFILE -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '')\
         .replace('(', '').replace(')', '')
     return ffmpeg_cmd, segments_no
+
+# end of the Dynamic FFMPEG conform function
 
 # Metadata creation functions
 

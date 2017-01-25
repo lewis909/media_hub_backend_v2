@@ -57,7 +57,7 @@ def transcoder(transcode_node, cursor, dbc):
                 # Processing starts
                 file_log = logging.getLogger()
                 file_log.setLevel(logging.DEBUG)
-                fh = logging.FileHandler(filename='task' + task_log + task_id + '.txt')
+                fh = logging.FileHandler(filename=task_log + 'task_' + task_id + '.txt')
                 formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
                 fh.setFormatter(formatter)

@@ -7,7 +7,6 @@ import hashlib
 import tarfile
 import xml.dom.minidom as dom
 import logging
-import datetime
 
 from metadata_profiles import profile_dict
 from subprocess import PIPE

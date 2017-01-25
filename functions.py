@@ -186,5 +186,6 @@ def naming_convention(task_id, mat_id, series_title, season_title, season_number
 
         return target_video_file_name, target_metadata_name, target_image_file_name, target_package_name
 
+
 def timestamp():
     return str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))

@@ -106,7 +106,7 @@ def parse_xml(file_input, conform_path, base_file_name):
 
     pre_s = find_seg_in_point(str(segments), segments_no, conform_path, base_file_name)
 
-    ffmpeg_cmd = 'ffmpeg -progress LOGFILE -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '')\
+    ffmpeg_cmd = 'ffmpeg -i INPUT_FILE ' + str(pre_s)[3:-2].replace("'", '').replace(',', '')\
         .replace('(', '').replace(')', '')
     return ffmpeg_cmd, segments_no
 

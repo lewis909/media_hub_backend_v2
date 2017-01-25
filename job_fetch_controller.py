@@ -1,8 +1,9 @@
 from glob import glob
 import task_prep
 import time
-import datetime
 import os
+
+from functions import timestamp
 
 # Staging Path
 path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
@@ -12,7 +13,7 @@ while True:
 
     with open('test_log.txt', 'a') as log:
         if int(len(path)):
-            data = (str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Processing files\n')
+            data = (timestamp() + ': Processing files\n')
             print(data)
             log.write(data + '\n')
             for i in path:
@@ -30,5 +31,5 @@ while True:
         else:
             time.sleep(5)
             path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
-            print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Waiting for files\n'))
-            log.write(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + ': Waiting for files\n'))
+            print(timestamp() + ': Waiting for files\n')
+            log.write(timestamp() + ': Waiting for files\n')

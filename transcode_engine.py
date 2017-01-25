@@ -11,6 +11,7 @@ import datetime
 
 from metadata_profiles import profile_dict
 from subprocess import PIPE
+from functions import timestamp
 from glob import glob
 
 
@@ -58,7 +59,7 @@ def transcoder(transcode_node, cursor, dbc):
                     datefmt='%Y-%m-%d %H:%M:%S')
                 fh.setFormatter(formatter)
                 file_log.addHandler(fh)
-                print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Starting Task ' + task_id)
+                print(timestamp() + ': Starting Task ' + task_id)
                 file_log.info(': Starting Task ' + task_id)
 
                 # Updated database with task start time
@@ -69,11 +70,11 @@ def transcoder(transcode_node, cursor, dbc):
 
                 # Logic to move files into a DIR if that DIR already exists.
                 if not os.path.exists(processing_temp_full):
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Creating path: ' + processing_temp_full)
+                    print(timestamp() + ': Creating path: ' + processing_temp_full)
                     file_log.info(': Creating path: ' + processing_temp_full)
                     try:
                         os.makedirs(processing_temp_full)
-                        print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Moving files to ' + processing_temp_root)
+                        print(timestamp() + ': Moving files to ' + processing_temp_root)
                         file_log.info(': Moving files to ' + processing_temp_root)
                         shutil.move(node + base_mp4, processing_temp_root)
                         shutil.move(node + base_xml, core_metadata_path)
@@ -82,7 +83,7 @@ def transcoder(transcode_node, cursor, dbc):
                         file_log.info(e)
                 else:
                     try:
-                        print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Folder structure already exists, moving files to ' + processing_temp_root)
+                        print(timestamp() + ': Folder structure already exists, moving files to ' + processing_temp_root)
                         file_log.info(': Folder structure already exists, moving files to ' + processing_temp_root)
                         shutil.move(node + base_mp4, processing_temp_root)
                         shutil.move(node + base_xml, core_metadata_path)
@@ -92,7 +93,7 @@ def transcoder(transcode_node, cursor, dbc):
                 # Conform section.
                 ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform, base_mp4)
                 ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source)
-                print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + ffmpeg_conform)
+                print(timestamp() + ': ' + ffmpeg_conform)
                 logging.info(ffmpeg_conform)
 
                 # Updated database stating that the conform process has started
@@ -101,10 +102,10 @@ def transcoder(transcode_node, cursor, dbc):
                 dbc.commit()
                 try:
                     conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' +conform_result.stderr)
+                    print(timestamp() + ': ' +conform_result.stderr)
                     file_log.info(conform_result.stderr)
                 except Exception as e:
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Conform has Failed: ' + task_id)
+                    print(timestamp() + ': Conform has Failed: ' + task_id)
                     print(e)
                     file_log.error('Conform has Failed: ' + task_id)
                     file_log.error(e)
@@ -125,15 +126,15 @@ def transcoder(transcode_node, cursor, dbc):
                 cursor.execute(sql_transcode)
                 dbc.commit()
                 try:
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + ffmpeg_transcode)
+                    print(timestamp() + ': ' + ffmpeg_transcode)
                     file_log.info(ffmpeg_transcode)
                     transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': ' + transcode_result.stderr)
+                    print(timestamp() + ': ' + transcode_result.stderr)
                     file_log.info(transcode_result.stderr)
                 except Exception as e:
                     file_log.error(e)
                     print(e)
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Transcode has failed: ' + task_id)
+                    print(timestamp() + ': Transcode has failed: ' + task_id)
 
                 video_size = os.path.getsize(target_path)
                 video_checksum = hashlib.md5(open(target_path, 'rb').read()).hexdigest()
@@ -161,19 +162,19 @@ def transcoder(transcode_node, cursor, dbc):
                 # Moves all files into the target DIR
                 if package_type == 'flat':
                     try:
-                        print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Moving Files to ' + target_end_dir)
+                        print(timestamp() + ': Moving Files to ' + target_end_dir)
                         file_log.info('Moving Files to ' + target_end_dir)
                         shutil.move(target_video_file, target_end_dir)
                         shutil.move(target_xml, target_end_dir)
                         task_state = 'complete'
                     except Exception as e:
                         file_log.error(e)
-                        print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + e)
+                        print(timestamp() + e)
                         task_state = 'error'
                 # Wraps required files in a .tar in the target DIR
                 elif package_type == 'tar':
                     try:
-                        print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': creating tar package')
+                        print(timestamp() + ': creating tar package')
                         file_log.info('creating tar package')
                         file_list = [target_video_file, target_xml]
                         with tarfile.open(final_dir + '.tar', 'x') as tar:
@@ -188,7 +189,7 @@ def transcoder(transcode_node, cursor, dbc):
                 # Creates a DIR in the target DIR and moves package files into that DIR.
                 elif package_type == 'dir':
                     try:
-                        print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Creating DIR')
+                        print(timestamp() + ': Creating DIR')
                         file_log.info('Creating DIR')
                         os.mkdir(final_dir)
                         shutil.move(target_video_file, final_dir)
@@ -200,7 +201,7 @@ def transcoder(transcode_node, cursor, dbc):
                         task_state = 'error'
 
                 if task_state == 'complete':
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': Task: ' + task_id + ' complete, waiting for new job ')
+                    print(timestamp() + ': Task: ' + task_id + ' complete, waiting for new job ')
                     file_log.info('Task: ' + task_id + ' complete, waiting for new job ')
                     # Updated database stating that the task has completed
                     sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
@@ -212,7 +213,7 @@ def transcoder(transcode_node, cursor, dbc):
                     cursor.execute(end_job)
                     dbc.commit()
                 elif task_state == 'error':
-                    print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': there was an error moving onto next job')
+                    print(timestamp() + ': there was an error moving onto next job')
                     file_log.error('there was an error moving onto next job')
                     # Updated database stating that the task has completed
                     sql_error = "UPDATE task SET status ='Error' WHERE task_id ='" + task_id + "'"
@@ -227,7 +228,7 @@ def transcoder(transcode_node, cursor, dbc):
                 file_log.removeHandler(fh)
 
         else:
-            print(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) + ': No Files to Process \n')
+            print(timestamp() + ': No Files to Process \n')
 
             time.sleep(5)
 

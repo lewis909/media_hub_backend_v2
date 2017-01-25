@@ -7,6 +7,7 @@ import shutil
 import hashlib
 import tarfile
 import xml.dom.minidom as dom
+import logging
 
 from metadata_profiles import profile_dict
 from subprocess import PIPE
@@ -42,8 +43,9 @@ def transcoder(transcode_node, cursor, dbc):
                 processing_temp_root = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\'
                 processing_temp_full = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\temp\\'
                 processing_temp_conform = 'F:\\Transcoder\\processing_temp\\' + 'task_' + task_id + '\\conform\\'
-                conform_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 'c_' + task_id + '.txt'
-                transcode_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 't_' + task_id + '.txt'
+                #conform_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 'c_' + task_id + '.txt'
+                #transcode_log = 'F:\\Transcoder\\logs\\transcode_logs\\' + 't_' + task_id + '.txt'
+                task_log = 'F:\\Transcoder\\logs\\transcode_logs\\'
                 base_xml = base + '.xml'
                 base_mp4 = base + '.mp4'
                 conform_source = processing_temp_root + base_mp4
@@ -53,7 +55,15 @@ def transcoder(transcode_node, cursor, dbc):
                 final_xml = processing_temp_full + base_xml
 
                 # Processing starts
+                file_log = logging.getLogger()
+                file_log.setLevel(logging.DEBUG)
+                fh = logging.FileHandler(filename='task' + task_log + task_id + '.txt')
+                formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+                fh.setFormatter(formatter)
+                file_log.addHandler(fh)
                 print(move_time + ': Starting Task ' + task_id)
+                file_log.info(': Starting Task ' + task_id)
 
                 # Updated database with task start time
                 job_start_time = time.ctime()
@@ -64,21 +74,32 @@ def transcoder(transcode_node, cursor, dbc):
                 # Logic to move files into a DIR if that DIR already exists.
                 if not os.path.exists(processing_temp_full):
                     print(move_time + ': Creating path: ' + processing_temp_full)
-                    os.makedirs(processing_temp_full)
-                    print(move_time + ': Moving files to ' + processing_temp_root)
-                    shutil.move(node + base_mp4, processing_temp_root)
-                    shutil.move(node + base_xml, core_metadata_path)
+                    file_log.info(': Creating path: ' + processing_temp_full)
+                    try:
+                        os.makedirs(processing_temp_full)
+                        print(move_time + ': Moving files to ' + processing_temp_root)
+                        file_log.info(': Moving files to ' + processing_temp_root)
+                        shutil.move(node + base_mp4, processing_temp_root)
+                        shutil.move(node + base_xml, core_metadata_path)
+                    except Exception as e:
+                        print(e)
+                        file_log.info(e)
                 else:
-                    print(move_time + ': Folder structure already exists, moving files to ' + processing_temp_root)
-                    shutil.move(node + base_mp4, processing_temp_root)
-                    shutil.move(node + base_xml, core_metadata_path)
+                    try:
+                        print(move_time + ': Folder structure already exists, moving files to ' + processing_temp_root)
+                        file_log.info(': Folder structure already exists, moving files to ' + processing_temp_root)
+                        shutil.move(node + base_mp4, processing_temp_root)
+                        shutil.move(node + base_xml, core_metadata_path)
+                    except Exception as e:
+                        print(e)
 
                 # Conform section.
-                ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,  base_mp4)
-                ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source).replace('LOGFILE', conform_log)
+                ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform, base_mp4)
+                ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source)
                 print(ffmpeg_conform)
+                logging.info(ffmpeg_conform)
 
-                functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
+                #functions.progress_seconds(config.prog_temp, task_id + '.txt', total_dur)
 
                 # Updated database stating that the conform process has started
                 sql_conform = "UPDATE task SET status ='Conforming' WHERE task_id ='" + task_id + "'"
@@ -87,12 +108,12 @@ def transcoder(transcode_node, cursor, dbc):
                 try:
                     conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                     print(conform_result.stderr)
-                    # TODO - prefix time stamp to STDOUT for FFMPEG log
-                    c_log = open(config.transcode_logs + 'c_' + task_id + '_detail.txt', 'w')
-                    c_log.write(conform_result.stderr)
-                    c_log.close()
-                except ValueError:
+                    file_log.info(conform_result.stderr)
+                except Exception as e:
                     print('Conform has Failed: ' + task_id)
+                    print(e)
+                    file_log.error('Conform has Failed: ' + task_id)
+                    file_log.error(e)
 
                 shutil.move(processing_temp_root + 'core_metadata.xml', processing_temp_full + 'core_metadata.xml')
 
@@ -102,7 +123,6 @@ def transcoder(transcode_node, cursor, dbc):
 
                 # Transcode section.
                 ffmpeg_transcode = str(transcode_get) \
-                    .replace('LOG_FILE.txt', transcode_log) \
                     .replace('T_PATH/CONFORM_LIST', cml) \
                     .replace('TRC_PATH/F_NAME.mp4', target_path)
 
@@ -112,12 +132,12 @@ def transcoder(transcode_node, cursor, dbc):
                 dbc.commit()
                 try:
                     print(ffmpeg_transcode)
+                    file_log.info(ffmpeg_transcode)
                     transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                     print(transcode_result.stderr)
-                    t_log = open(config.transcode_logs + 't_' + task_id + '_detail.txt', 'w')
-                    t_log.write(transcode_result.stderr)
-                    t_log.close()
+                    file_log.info(transcode_result.stderr)
                 except Exception as e:
+                    file_log.error(e)
                     print(e)
                     print('Transcode has failed: ' + task_id)
 
@@ -148,16 +168,19 @@ def transcoder(transcode_node, cursor, dbc):
                 if package_type == 'flat':
                     try:
                         print('Moving Files to ' + target_end_dir)
+                        file_log.info('Moving Files to ' + target_end_dir)
                         shutil.move(target_video_file, target_end_dir)
                         shutil.move(target_xml, target_end_dir)
                         task_state = 'complete'
                     except Exception as e:
+                        file_log.error(e)
                         print(e)
                         task_state = 'error'
                 # Wraps required files in a .tar in the target DIR
                 elif package_type == 'tar':
                     try:
                         print('creating tar package')
+                        file_log.info('creating tar package')
                         file_list = [target_video_file, target_xml]
                         with tarfile.open(final_dir + '.tar', 'x') as tar:
                             for t_file in file_list:
@@ -166,21 +189,25 @@ def transcoder(transcode_node, cursor, dbc):
                         task_state = 'complete'
                     except Exception as e:
                         print(e)
+                        file_log.error(e)
                         task_state = 'error'
                 # Creates a DIR in the target DIR and moves package files into that DIR.
                 elif package_type == 'dir':
                     try:
                         print('Creating DIR')
+                        file_log.info('Creating DIR')
                         os.mkdir(final_dir)
                         shutil.move(target_video_file, final_dir)
                         shutil.move(target_xml, final_dir)
                         task_state = 'complete'
                     except Exception as e:
                         print(e)
+                        file_log.error(e)
                         task_state = 'error'
 
                 if task_state == 'complete':
                     print('Task: ' + task_id + ' complete, waiting for new job ')
+                    file_log.info('Task: ' + task_id + ' complete, waiting for new job ')
                     # Updated database stating that the task has completed
                     sql_complete = "UPDATE task SET status ='Complete' WHERE task_id ='" + task_id + "'"
                     cursor.execute(sql_complete)
@@ -192,6 +219,7 @@ def transcoder(transcode_node, cursor, dbc):
                     dbc.commit()
                 elif task_state == 'error':
                     print('there was an error moving onto next job')
+                    file_log.error('there was an error moving onto next job')
                     # Updated database stating that the task has completed
                     sql_error = "UPDATE task SET status ='Error' WHERE task_id ='" + task_id + "'"
                     cursor.execute(sql_error)
@@ -201,6 +229,8 @@ def transcoder(transcode_node, cursor, dbc):
                     end_job = "UPDATE task SET job_end_time ='" + job_complete_time + "'WHERE task_id ='" + task_id + "'"
                     cursor.execute(end_job)
                     dbc.commit()
+
+                file_log.removeHandler(fh)
 
         else:
             print('No Files to Process \n')

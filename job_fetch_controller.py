@@ -24,12 +24,13 @@ file_log.addHandler(fh)
 while True:
 
         if int(len(path)):
-            data = (timestamp() + ': Processing files\n')
-            print(data)
+            data = ': Processing files\n'
+            print(timestamp() + data)
             file_log.info(data)
             for i in path:
                 try:
                     task = task_prep.task_prep()
+                    print(timestamp() + task)
                     file_log.info(task)
                     path = glob('F:\\Transcoder\\staging\\prep\\*.xml')
                     time.sleep(3)

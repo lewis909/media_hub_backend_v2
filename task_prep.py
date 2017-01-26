@@ -8,10 +8,8 @@ from glob import glob
 def task_prep():
     prep_xml = glob('F:\\Transcoder\\staging\\prep\\*xml')
     if prep_xml:
-        print(': ' + str(prep_xml))
 
         for file in prep_xml:
-            print(': ' + str(file))
 
             doc = dom.parse(file)
             filename = doc.getElementsByTagName("source_filename")

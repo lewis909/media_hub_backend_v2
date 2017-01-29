@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest task_id="00000000107">
+  <asset_metadata>
+    <material_id>LB000002</material_id>
+    <series_title>This is a test 2</series_title>
+    <season_title>test test</season_title>
+    <season_number>12</season_number>
+    <episode_title>that test 2</episode_title>
+    <episode_number>22</episode_number>
+    <start_date>23-12-2016</start_date>
+    <end_date>31-12-2016</end_date>
+    <ratings>152</ratings>
+    <synopsis>this is a test 2</synopsis>
+  </asset_metadata>
+  <file_info>
+    <source_filename>LB000002</source_filename>
+    <number_of_segments>3</number_of_segments>
+    <segment_1 seg_1_in="00:00:00.000" seg_1_out="00:01:00.000" seg_1_dur="00:01:00.000"/>
+    <segment_2 seg_2_in="00:02:00.000" seg_2_out="00:03:00.000" seg_2_dur="00:01:00.000"/>
+    <segment_3 seg_3_in="00:04:00.000" seg_3_out="00:05:00.000" seg_3_dur="00:01:00.000"/>
+    <conform_profile definition="sd" aspect_ratio="12f16">ffmpeg -progress LOG_FILE.txt -i S_PATH/F_NAME.mp4 SEG_CONFORM</conform_profile>
+    <transcode_profile profile_name="amazon" package_type="tar">ffmpeg -safe 0 -progress LOG_FILE.txt -f concat -i T_PATH/CONFORM_LIST TRC_PATH/F_NAME.mp4</transcode_profile>
+    <target_path>F:\profiles\amazon\</target_path>
+  </file_info>
+</manifest>

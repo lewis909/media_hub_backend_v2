@@ -19,6 +19,7 @@ def task_prep():
             scr_tar = config.prep + base + '.mp4'
             xml_base = os.path.basename(file)
             vid_base = os.path.basename(scr_tar)
+            tx_repo = 'E:\\tx_repo\\' + fname + '.mp4'
             nc_1 = len(os.listdir(config.node_1_path))
             nc_2 = len(os.listdir(config.node_2_path))
             nc_3 = len(os.listdir(config.node_3_path))
@@ -30,7 +31,7 @@ def task_prep():
                 print(src_repo + ' found')
             else:
                 print(src_repo + ' not found, copying to source repo from tx repo')
-                shutil.copy('E:\\tx_repo\\' + fname + '.mp4', src_repo)
+                shutil.copy(tx_repo, src_repo)
                 print('copying complete')
 
             if min(load) == nc_1:

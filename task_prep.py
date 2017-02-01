@@ -26,6 +26,14 @@ def task_prep():
 
             load = [nc_1, nc_2, nc_3, nc_4]
 
+            if os.path.exists(src_repo):
+                print(src_repo + ' found')
+            else:
+                print(src_repo + ' not found, copying to source repo from tx repo')
+                print(fname)
+                shutil.copy('E:\\tx_repo\\' + fname + '.mp4', src_repo)
+                print('copying complete')
+
             if min(load) == nc_1:
 
                 shutil.copy(src_repo, scr_tar)

@@ -30,7 +30,6 @@ def task_prep():
                 print(src_repo + ' found')
             else:
                 print(src_repo + ' not found, copying to source repo from tx repo')
-                print(fname)
                 shutil.copy('E:\\tx_repo\\' + fname + '.mp4', src_repo)
                 print('copying complete')
 

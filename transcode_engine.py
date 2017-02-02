@@ -55,7 +55,7 @@ def transcoder(transcode_node, cursor, dbc):
                 file_log.setLevel(logging.DEBUG)
                 fh = logging.FileHandler(filename=task_log + 'task_' + task_id + '.txt')
                 formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+                                              datefmt='%Y-%m-%d %H:%M:%S')
                 fh.setFormatter(formatter)
                 file_log.addHandler(fh)
                 print(timestamp() + ': Starting Task ' + task_id)
@@ -82,7 +82,8 @@ def transcoder(transcode_node, cursor, dbc):
                         file_log.info(e)
                 else:
                     try:
-                        print(timestamp() + ': Folder structure already exists, moving files to ' + processing_temp_root)
+                        print(
+                            timestamp() + ': Folder structure already exists, moving files to ' + processing_temp_root)
                         file_log.info(': Folder structure already exists, moving files to ' + processing_temp_root)
                         shutil.move(node + base_mp4, processing_temp_root)
                         shutil.move(node + base_xml, core_metadata_path)
@@ -90,7 +91,8 @@ def transcoder(transcode_node, cursor, dbc):
                         print(e)
 
                 # Conform section.
-                ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform, base_mp4)
+                ffmpeg_conform_cmd, seg_number = functions.parse_xml(core_metadata_path, processing_temp_conform,
+                                                                     base_mp4)
                 ffmpeg_conform = str(ffmpeg_conform_cmd).replace('INPUT_FILE', conform_source)
                 print(timestamp() + ': ' + ffmpeg_conform)
                 logging.info(ffmpeg_conform)
@@ -101,7 +103,7 @@ def transcoder(transcode_node, cursor, dbc):
                 dbc.commit()
                 try:
                     conform_result = subprocess.run(ffmpeg_conform, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                    print(timestamp() + ': ' +conform_result.stderr)
+                    print(timestamp() + ': ' + conform_result.stderr)
                     file_log.info(conform_result.stderr)
                 except Exception as e:
                     print(timestamp() + ': Conform has Failed: ' + task_id)
@@ -127,10 +129,12 @@ def transcoder(transcode_node, cursor, dbc):
                 try:
                     print(timestamp() + ': ' + ffmpeg_transcode)
                     file_log.info(ffmpeg_transcode)
-                    transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+                    transcode_result = subprocess.run(ffmpeg_transcode, stdout=PIPE, stderr=PIPE,
+                                                      universal_newlines=True)
                     print(timestamp() + ': ' + transcode_result.stderr)
                     file_log.info(transcode_result.stderr)
                 except Exception as e:
+                    file_log.error(': Transcode has failed: ' + task_id)
                     file_log.error(e)
                     print(e)
                     print(timestamp() + ': Transcode has failed: ' + task_id)
@@ -138,16 +142,37 @@ def transcoder(transcode_node, cursor, dbc):
                 video_size = os.path.getsize(target_path)
                 video_checksum = hashlib.md5(open(target_path, 'rb').read()).hexdigest()
 
-                # Create file_date.xml (image section current contains test info).
-                functions.create_file_data(target_path, video_size, video_checksum,
-                                           'test', 'test', 'test', processing_temp_full)
+                try:
+                    # Create file_date.xml (image section current contains test info).
+                    functions.create_file_data(target_path, video_size, video_checksum,
+                                               'test', 'test', 'test', processing_temp_full)
+                except Exception as e:
+                    file_log.error(': file_data  has failed: ' + task_id)
+                    file_log.error(e)
+                    print(e)
+                    print(timestamp() + ': file_data  has failed: ' + task_id)
 
-                # Create metadata
-                profile_dict.metadata_profiles[xml_profile](*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
-                                                                                 file_data_xml, final_xml))
-                # file name creator
-                video_name_out, xml_name_out, image_name_out, dir_name_out = functions.naming_convention(*functions.get_metadata(processing_temp_full + 'core_metadata.xml',
-                                                                                 file_data_xml, final_xml))
+                try:
+                    # Create metadata
+                    profile_dict.metadata_profiles[xml_profile](
+                        *functions.get_metadata(processing_temp_full + 'core_metadata.xml',
+                                                file_data_xml, final_xml))
+                except Exception as e:
+                    file_log.error(': Metadata creation has failed: ' + task_id)
+                    file_log.error(e)
+                    print(e)
+                    print(timestamp() + ': Metadata creation has failed: ' + task_id)
+
+                try:
+                    # file name creator
+                    video_name_out, xml_name_out, image_name_out, dir_name_out = functions.naming_convention(
+                        *functions.get_metadata(processing_temp_full + 'core_metadata.xml',
+                                                file_data_xml, final_xml))
+                except Exception as e:
+                    file_log.error(': naming has failed: ' + task_id)
+                    file_log.error(e)
+                    print(e)
+                    print(timestamp() + ': naming has failed: ' + task_id)
 
                 # Final package delivery.
                 final_video = processing_temp_full + base_mp4

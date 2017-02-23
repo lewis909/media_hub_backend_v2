@@ -1,5 +1,5 @@
-import transcode_engine
+import transcode_engine_postgres
 import config
 
 while True:
-    transcode_engine.transcoder(config.node_1_path, config.cursor_1, config.dbc1)
+    transcode_engine_postgres.transcoder(config.node_1_path, config.p_cursor, config.p_con)

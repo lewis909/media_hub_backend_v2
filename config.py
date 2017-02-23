@@ -1,6 +1,7 @@
 import os.path
 from glob import glob
 import pymysql as mariadb
+import psycopg2
 
 # UNC Paths
 prep = os.path.join('F:\\Transcoder\\staging\\prep\\')
@@ -37,6 +38,14 @@ sc_host = 'localhost'
 sc_user = 'lewis_transcode'
 sc_password = 'tool4602'
 sc_database = 'schedule'
+
+# postgreSQL connections
+
+p_con_string = "host='localhost' dbname='media_hub' user='media_hub_transcode' password='tool4602'"
+
+p_con = psycopg2.connect(p_con_string)
+
+p_cursor = p_con.cursor()
 
 # Connection 1
 dbc1 = mariadb.connect(host=mh_host,
